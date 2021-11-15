@@ -9,11 +9,32 @@
 
 # Instalation
 
-Download the source folder. Compile the program using javac.
+Download the source folder. Compile the program using javac from outside of the package directories.
+```bash
+ find . -name "*.java" > sources.txt
+ javac @sources.txt
+ ```
 
 # Usage
 
 Run the Server using java. Then run the client using java.
+
+###### Server Side:
+```bash
+ java server.BattleShipDriver [port]
+ ```
+
+###### Client Side:
+```bash
+ client.BattleDriver [server address] [port] [username]
+ ```
+ Commands:
+ - /battle    : sent by clients immediately after connecting the the server with <username> where username is the user’s nick name.
+ - /start     : begin a game of Battleship. Play cannot begin if 2 or more users are not present.
+ - /fire      :
+ - /surrender :
+ - /display   :
+
 
 ## Known Issues: Troubleshooting
 

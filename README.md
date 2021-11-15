@@ -30,8 +30,9 @@ Run the Server using java. Then run the client using java.
  ```
  Commands:
  - /battle    : sent by clients immediately after connecting the the server with <username> where username is the user’s nick name.
+   - /battle <username>
  - /start     : begin a game of Battleship. Play cannot begin if 2 or more users are not present.
- - /fire      :
+ - /fire      : 
  - /surrender :
  - /display   :
 

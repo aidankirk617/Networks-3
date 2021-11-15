@@ -29,12 +29,20 @@ Run the Server using java. Then run the client using java.
  client.BattleDriver [server address] [port] [username]
  ```
  Commands:
- - /battle    : sent by clients immediately after connecting the the server with \<username> where username is the user’s nick name.
-   - /battle \<username>
- - /start     : begin a game of Battleship. Play cannot begin if 2 or more users are not present.
- - /fire      : 
- - /surrender :
- - /display   :
+ - battle    : sent by clients immediately after connecting the the server with \<username> where username is the user’s nick name.
+   - USE: /battle \<username>
+ 
+ - start     : begin a game of Battleship. Play cannot begin if 2 or more users are not present.
+   - USE: /start
+   
+ - fire      : sent during game play to indicate the user to attack, and the location within the board you wish to attack. 
+   - USE: /fire \<[0-9]+> \<[0-9]+> \<username>
+   
+ - surrender : sent when you intend to disconnect from the server.
+   - USE: /surrender
+   
+ - display   : sent when you want to examine the current state of a board.
+   - USE: /display \<username>
 
 
 ## Known Issues: Troubleshooting

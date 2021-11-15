@@ -20,7 +20,7 @@ Run the Server using java. Then run the client using java.
 If the game will not compile, try going into each package and compiling all java files.
 
 ## Changelog
-[Timeline for this project](docs/TIMELINE.md)
+[Timeline for this project](/TIMELINE.md)
 
 No current issues.
 

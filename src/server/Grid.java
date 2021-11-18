@@ -7,7 +7,6 @@
 package server;
 
 import java.util.Random;
-import java.util.Scanner;
 
 // TODO: maybe move ship logic to different file
 // TODO: Comment more and javadoc
@@ -27,18 +26,6 @@ public class Grid {
     for (int i = 0; i < board.length; i++) {
       for (int j = 0; j < board[i].length; j++) {
         board[i][j] = ' ';   // Initialize length of array
-      }
-    }
-  }
-
-  public Grid(int size, char init) {
-
-    board = new char[size][size];   // Possibly go back and just make this size 10?
-    this.size = size;
-
-    for (int i = 0; i < board.length; i++) {
-      for (int j = 0; j < board[i].length; j++) {
-        board[i][j] = init;   // Populate board with char init
       }
     }
   }
@@ -71,49 +58,105 @@ public class Grid {
   public void placeShip(Ship ship, int axisX, int axisY, String direction) throws ArrayIndexOutOfBoundsException {
 
     int size = ship.getSize();
-    if (direction.equals("left")) {
-      for (int i = 0; i < size; i++) {
-        check(axisX + i, axisY);
-        board[axisY][axisX + i] = ship.getMarker();
-      }
-    } else if (direction.equals("right")) {
-      for (int i = 0; i < size; i++) {
-        check(axisX - i, axisY);
-        board[axisY][axisX - i] = ship.getMarker();
-      }
-    } else if (direction.equals("up")) {
-      for (int i = 0; i < size; i++) {
-        check(axisX, axisY - i);
-        board[axisY - i][axisX] = ship.getMarker();
-      }
-    } else if (direction.equals("down")) {
-      for (int i = 0; i < size; i++) {
-        check(axisX, axisY + i);
-        board[axisY + i][axisX] = ship.getMarker();
-      }
+    switch (direction) {
+      case "left":
+        if(canPlace(size,axisX,axisY,direction)){
+          for (int i = 0; i < size; i++) {
+            board[axisY][axisX + i] = ship.getMarker();
+          }
+        }
+        break;
+      case "right":
+        if(canPlace(size,axisX,axisY,direction)){
+          for (int i = 0; i < size; i++) {
+            board[axisY][axisX - i] = ship.getMarker();
+          }
+        }
+        break;
+      case "up":
+        if(canPlace(size,axisX,axisY,direction)){
+          for (int i = 0; i < size; i++) {
+            board[axisY - i][axisX] = ship.getMarker();
+          }
+        }
+        break;
+      case "down":
+        if(canPlace(size,axisX,axisY,direction)){
+          for (int i = 0; i < size; i++) {
+            board[axisY + i][axisX] = ship.getMarker();
+          }
+        }
+        break;
     }
   }
 
-  public void check(int x, int y) {
-    if (board[y][x] != ' ') {
-      throw new ArrayIndexOutOfBoundsException("ERROR: spot already taken.");
+  private boolean canPlace(int shipSize, int xAxis, int yAxis, String direction){
+    boolean result = false;
+    switch (direction) {
+      case "left":
+        for (int i = 0; i < shipSize; i++) {
+          if (check(xAxis + i, yAxis)) {
+            result = true;
+          }else{
+            result = false;
+            break;
+          }
+        }
+        break;
+      case "right":
+        for (int i = 0; i < shipSize; i++) {
+          if (check(xAxis - i, yAxis)) {
+            result = true;
+          }else{
+            result = false;
+            break;
+          }
+        }
+        break;
+      case "up":
+        for (int i = 0; i < shipSize; i++) {
+          if (check(xAxis, yAxis - i)) {
+            result = true;
+          }else{
+            result = false;
+            break;
+          }
+        }
+        break;
+      case "down":
+        for (int i = 0; i < shipSize; i++) {
+          if (check(xAxis, yAxis + i)) {
+            result = true;
+          }else{
+            result = false;
+            break;
+          }
+        }
+        break;
+    }
+
+    return result;
+  }
+
+  public boolean check(int x, int y) {
+    try{
+      return board[y][x] == ' ';
+    }catch(ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException){
+      return false;
     }
   }
 
   public void randPlacement() {
-
     int num = amount();
     while (num > 0) {
       Ship ship = randShip();
       int x = randCoordinate();
       int y = randCoordinate();
       String direction = randDirection();
-      try {
+      assert ship != null;
+      if(canPlace(ship.getSize(), x, y, direction)){
         placeShip(ship, x, y, direction);
         num--;
-      } catch (ArrayIndexOutOfBoundsException aioobe) {
-        System.out.println("Failed Placement");         //TODO: Debug this
-        placeShip(Ship.BLANK, x, y, direction);
       }
     }
   }
@@ -141,13 +184,13 @@ public class Grid {
     
     int num = 0;
     if (board.length == 10) {
-      num = (int) (Math.random() * (6 - 4 + 1) + 4);
+      num = (int) ((Math.random() * (6 - 4)) + 4);
     } else if (board.length == 9 || board.length == 8) {
-      num = (int) (Math.random() * (5 - 3 + 1) + 3);
+      num = (int) ((Math.random() * (5 - 3)) + 3);
     } else if (board.length == 7 || board.length == 6) {
-      num = (int) (Math.random() * (3 - 2 + 1) + 2);
+      num = (int) ((Math.random() * (3 - 2)) + 2);
     } else if (board.length == 5) {
-      num = (int) (Math.random() * (2 - 1 + 1) + 1);
+      num = (int) ((Math.random() * (2 - 1)) + 1);
     }
     return num;
   }

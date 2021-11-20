@@ -10,7 +10,6 @@ package server;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.Scanner;
 
 // TODO: maybe move ship logic to different file
 
@@ -56,36 +55,8 @@ public class Grid {
     for (char[] chars : board) {
       Arrays.fill(chars, ' ');
     }
-  }
 
-  /**
-   * Prints the current board from the perspective of the player who controls it.
-   * @return
-   */
-  public StringBuilder print() {   // TODO: Maybe move this?
-    //holds
-    StringBuilder graphic = new StringBuilder("  ");
-    StringBuilder result = new StringBuilder("   ");
-
-    for (int i = 0; i < board.length; i++) {
-      result.append(i).append("   ");
-      graphic.append("+---");    // Graphic for the game board
-    }
-
-    graphic.append("+");         // Graphic for the game board
-    result.append('\n');
-
-    for (int i = 0; i < board.length; i++) {
-      result.append(graphic);
-      result.append('\n').append(i);
-      for (int j = 0; j < board[i].length; j++) {
-        result.append(" | ").append(board[i][j]);
-      }
-      result.append(" |");
-      result.append('\n');
-    }
-    result.append(graphic);
-    return result;
+    randPlacement(); // Place ships randomly on board
   }
 
   /**
@@ -258,7 +229,7 @@ public class Grid {
    * @return random number between predetermined range for each board size.
    */
   public int amount() {
-    
+
     int num = 0;
 
     if (board.length == 10) { // if board is 10 x 10 : number between 4-6
@@ -306,53 +277,112 @@ public class Grid {
     return this.board.length;
   }
 
-  // TODO: Maybe just make this the default way for Player A and B
-  private String genBoard() {
-    String gridLines = "  ";
-    for (int i = 0; i < board.length; i++) {
-      System.out.print(i + "   ");
-      gridLines += "+---";
+  public char getSpace(int x, int y){
+    if( x > board.length || x < 0){
+      System.out.println("PLEASE ENTER VALID X COORDINATE");
+      return '!';
+    }if( y > board.length || y < 0){
+      System.out.println("PLEASE ENTER VALID Y COORDINATE");
+      return '!';
     }
-    gridLines += "+";
-    return gridLines;
+    return board[x][y];
   }
 
-  // Print the other guys grid
-  public void printGridB() {
-    System.out.print("    ");
-    String gridLines = genBoard();
-    System.out.println();
+  public void setSpace(char value, int x, int y){
+    if( x > board.length || x < 0){
+      System.out.println("PLEASE ENTER VALID X COORDINATE");
+    }else if( y > board.length || y < 0){
+      System.out.println("PLEASE ENTER VALID Y COORDINATE");
+    }else
+      board[x][y] = value;
+  }
+
+  /**
+   * Prints the current board from the perspective of the player who controls it.
+   * @return
+   */
+  public StringBuilder printGridA() {
+
+    StringBuilder graphic = new StringBuilder("  ");
+    StringBuilder result = new StringBuilder("   ");
+
     for (int i = 0; i < board.length; i++) {
-      System.out.println(gridLines);
-      System.out.print(i + " ");
+      result.append(i).append("   ");
+      graphic.append("+---");
+    }
+    graphic.append("+");
+    result.append('\n');
+
+    for (int i = 0; i < board.length; i++) {
+      result.append(graphic);
+      result.append('\n').append(i);
+      for (int j = 0; j < board[i].length; j++) {
+        result.append(" | ").append(board[i][j]);
+      }
+      result.append(" |");
+      result.append('\n');
+    }
+    result.append(graphic);
+    return result;
+  }
+
+  /** Print Player 2's Grid **/
+  public StringBuilder printGridB() {
+    //holds
+    StringBuilder graphic;
+    graphic = new StringBuilder("  ");
+    StringBuilder result;
+    result = new StringBuilder("   ");
+
+    for (int i = 0; i < board.length; i++) {
+      result.append(i).append("   ");
+      graphic.append("+---");
+    }
+    graphic.append("+");
+    result.append('\n');
+
+    for (int i = 0; i < board.length; i++) {
+      result.append(graphic);
+      result.append('\n').append(i);
       for (int j = 0; j < board[i].length; j++) {
         char hold = board[i][j];
         if (hold == 'C' || hold == 'B' || hold == 'R' ||
                 hold == 'S' || hold == 'D') {
-          System.out.print("|   ");
+          result.append("|   ");
         } else {
-          System.out.print("| " + board[i][j] + " ");
+          result.append("| ").append(board[i][j]);
         }
       }
-      System.out.print("|");
-      System.out.println();
+      result.append("|");
+      result.append('\n');
     }
-    System.out.println(gridLines);
+    result.append(graphic);
+    return result;
   }
 
-  // TODO: Put printGridA down here?
-
+  /** Main **/
   public static void main(String[] args) {
-    Scanner scanner = new Scanner(System.in);
-    System.out.println("What board size would you like (5-10): ");
-    int boardSize = scanner.nextInt();
-    while (boardSize < 5 || boardSize > 10){
-      System.out.println("Please enter a valid number (5-10): ");
-      boardSize = scanner.nextInt();
-    }
-    Grid grid = new Grid(boardSize);
-    grid.randPlacement();
-    System.out.println(grid.print() + "\n\n\n");     // printGridA?
-    grid.printGridB();
+//    Scanner scanner = new Scanner(System.in);
+//    System.out.println("What board size would you like (5-10): ");
+//    int boardSize = scanner.nextInt();
+//    while (boardSize < 5 || boardSize > 10){
+//      System.out.println("Please enter a valid number (5-10): ");
+//      boardSize = scanner.nextInt();
+//    }
+//    Grid grid = new Grid(boardSize);
+//    grid.randPlacement();
+//    System.out.println(grid.printGridA() + "\n\n\n");
+//    grid.printGridB();
+
+    Player david = new Player("David", 0, 10);
+    System.out.println(david);
+    david.markHit(david, 3, 3);
+    System.out.println(david);
+    david.markHit(david, 3, 4);
+    System.out.println(david);
+    david.markHit(david, 3, 5);
+    System.out.println(david);
+    david.markHit(david, 5, 4);
+    System.out.println(david);
   }
 }

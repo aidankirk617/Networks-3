@@ -61,7 +61,7 @@ public class Grid {
   /**
    * Prints the current board from the perspective of the player who controls it.
    */
-  public void print() {
+  public void print() {   // TODO: Maybe move this?
     //holds
     System.out.print("    ");
     StringBuilder graphic = new StringBuilder("  ");
@@ -300,6 +300,46 @@ public class Grid {
     return direction;
   }
 
+  public int getLength() {
+    return this.board.length;
+  }
+
+  // TODO: Maybe just make this the default way for Player A and B
+  private String genBoard() {
+    String gridLines = "  ";
+    for (int i = 0; i < board.length; i++) {
+      System.out.print(i + "   ");
+      gridLines += "+---";
+    }
+    gridLines += "+";
+    return gridLines;
+  }
+
+  // Print the other guys grid
+  public void printGridB() {
+    System.out.print("    ");
+    String gridLines = genBoard();
+    System.out.println();
+    for (int i = 0; i < board.length; i++) {
+      System.out.println(gridLines);
+      System.out.print(i + " ");
+      for (int j = 0; j < board[i].length; j++) {
+        char hold = board[i][j];
+        if (hold == 'C' || hold == 'B' || hold == 'R' ||
+                hold == 'S' || hold == 'D') {
+          System.out.print("|   ");
+        } else {
+          System.out.print("| " + board[i][j] + " ");
+        }
+      }
+      System.out.print("|");
+      System.out.println();
+    }
+    System.out.println(gridLines);
+  }
+
+  // TODO: Put printGridA down here?
+
   public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
     System.out.println("What board size would you like (5-10): ");
@@ -308,8 +348,9 @@ public class Grid {
       System.out.println("Please enter a valid number (5-10): ");
       boardSize = scanner.nextInt();
     }
-    Grid grid = new Grid(boardSize);    // Output 9x9 game board
+    Grid grid = new Grid(boardSize);
     grid.randPlacement();
-    grid.print();                     // Prints game board
+    grid.print();     // printGridA?
+    grid.printGridB();
   }
 }

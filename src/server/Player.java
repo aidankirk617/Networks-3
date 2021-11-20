@@ -67,7 +67,7 @@ public class Player {
         player.grid.printGridB();
     }
 
-    public Boolean markHit(Player player, int axisX, int axisY) {
+    public static Boolean markHit(Player player, int axisX, int axisY) {
 
         if (axisX >= player.getGrid().getLength() || axisX < 0 ||   // Check Bounds
                 axisY >=player.getGrid().getLength() || axisY < 0) {

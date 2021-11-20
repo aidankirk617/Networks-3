@@ -8,80 +8,60 @@
 
 package server;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class Game {
-    Grid[] grids;
-    String[][] ships;
-    String[] players;
+    ArrayList<Player> players;
 
-    public static final String hit = "X";
-    public static final String miss = "O";
-
-    public Game(Grid[] grid, String[][] ships) {
-        this.grids = grid;
-        this.ships = ships;
+    public Game() {
+        twoPlayerLocalSetup();
     }
 
-    //------------------------------------{ Getters + Setters }-------------------------------------
+    private void twoPlayerLocalSetup(){
+        //initialize game with user input
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Player 1 name: ");
+        String player1Name = scan.next();
+        System.out.println("Player 2 name: ");
+        String player2Name = scan.next();
+        System.out.println("Size of Grids: ");
+        int gridSize = scan.nextInt();
 
-    public Grid[] getGrids() {
-        return grids;
+        Player player1 = new Player(player1Name, 0, gridSize);
+        Player player2 = new Player(player2Name, 1, gridSize);
+
+        players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
     }
 
-    public void setGrids(Grid[] grids) {
-        this.grids = grids;
+    public void playTwoPlayerGame(){
+        Scanner scanner = new Scanner(System.in);
+        while(!win()){
+            for(int i = 0; i < players.size(); i++){
+                int nextPlayer;
+                if(i == 0){
+                    nextPlayer = 1;
+                }else{
+                    nextPlayer = 0;
+                }
+                System.out.println(players.get(i).getName() + " it is your turn");
+                System.out.println("Choose target x: ");
+                int x = scanner.nextInt();
+                System.out.println("Choose target y: ");
+                int y = scanner.nextInt();
+                Player.markHit(players.get(nextPlayer), x, y);
+            }
+        }
     }
 
-    public String[][] getShips() {
-        return ships;
+    private boolean win(){
+        return false;
     }
 
-    public void setShips(String[][] ships) {
-        this.ships = ships;
-    }
-
-    public String[] getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(String[] players) {
-        this.players = players;
-    }
-
-    //-------------------------------------{ GAME METHODS }-----------------------------------------
-
-    public void placeShips(){
-        /* BASIC LOGIC
-
-            1.Import random number generator within size of board
-            2.check length of ship
-            3.if length of ship can fit on board, place it
-            4.else generate new number
-            5. repeat steps 1-4 for all ships
-
-
-         */
-    }
-
-    public void tryHit(){
-        /* BASIC LOGIC
-
-            1. check if location of desired hit is on the board
-                2. if it exists check if the location contains a ship
-                3. if a ship exists, mark hit, otherwise mark miss
-            5. if location is not on board or already checked, return with no changes
-
-         */
-    }
-
-    public void playGame(){
-        /*
-
-            1. Get players
-            2. initialize grids
-            3. create a loop that exits when only one grid remains
-            4. iterate through players asking them to attack another
-            5. check grids to see if all ships have been hit on a particular grid
-
-         */
+    public static void main(String[] args) {
+        Game game = new Game();
+        game.playTwoPlayerGame();
     }
 }

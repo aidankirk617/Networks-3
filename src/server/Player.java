@@ -1,7 +1,5 @@
 package server;
 
-import server.Grid;
-
 public class Player {
 
     /** Fields **/
@@ -61,7 +59,7 @@ public class Player {
 
     /** Print Player 1's Grid **/
     public void gridA() {
-        this.grid.print();
+        this.grid.printGridA();
     }
 
     /** Print Player 2's Grid **/
@@ -75,15 +73,15 @@ public class Player {
                 axisY >=player.getGrid().getLength() || axisY < 0) {
             return false;
         }
-        char hold = player.grid.getGrid()[axisY][axisX];     // Check hit
+        char hold = player.grid.getSpace(axisX, axisY);     // Check hit
         if (hold == 'C' || hold == 'B' || hold == 'R' ||
                 hold == 'S' || hold == 'D') {
 
-            player.grid.getGrid()[axisY][axisX] = 'X';              // Set hit
+            player.grid.setSpace('X', axisX, axisY);              // Set hit
             return true;
         } else if (hold == ' ') {
             //set char there to O for miss
-            player.grid.getGrid()[axisY][axisX] = 'O';              // Set miss
+            player.grid.setSpace('O', axisX, axisY);              // Set miss
             return true;
         } else {
             return false;
@@ -92,6 +90,6 @@ public class Player {
 
     @Override
     public String toString() {
-        return "Name: " + this.getName() +  "\n\tTurn: " + this.getTurn() + "\n\tGrid: " + this.getGrid();
+        return "Name: " + this.getName() +  "\n\tTurn: " + this.getTurn() + "\n\tGrid: \n" + this.getGrid().printGridA();
     }
 }

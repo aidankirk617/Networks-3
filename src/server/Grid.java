@@ -60,30 +60,32 @@ public class Grid {
 
   /**
    * Prints the current board from the perspective of the player who controls it.
+   * @return
    */
-  public void print() {   // TODO: Maybe move this?
+  public StringBuilder print() {   // TODO: Maybe move this?
     //holds
-    System.out.print("    ");
     StringBuilder graphic = new StringBuilder("  ");
+    StringBuilder result = new StringBuilder("   ");
 
     for (int i = 0; i < board.length; i++) {
-      System.out.print(i + "   ");
+      result.append(i).append("   ");
       graphic.append("+---");    // Graphic for the game board
     }
 
     graphic.append("+");         // Graphic for the game board
-    System.out.println();
+    result.append('\n');
 
     for (int i = 0; i < board.length; i++) {
-      System.out.println(graphic);
-      System.out.print(i + " ");
+      result.append(graphic);
+      result.append('\n').append(i);
       for (int j = 0; j < board[i].length; j++) {
-        System.out.print("| " + board[i][j] + " ");
+        result.append(" | ").append(board[i][j]);
       }
-      System.out.print("|");
-      System.out.println();
+      result.append(" |");
+      result.append('\n');
     }
-    System.out.println(graphic);
+    result.append(graphic);
+    return result;
   }
 
   /**
@@ -350,7 +352,7 @@ public class Grid {
     }
     Grid grid = new Grid(boardSize);
     grid.randPlacement();
-    grid.print();     // printGridA?
+    System.out.println(grid.print() + "\n\n\n");     // printGridA?
     grid.printGridB();
   }
 }

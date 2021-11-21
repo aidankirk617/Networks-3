@@ -58,8 +58,8 @@ public class Player {
     }
 
     /** Print Player 1's Grid **/
-    public void gridA() {
-        this.grid.printGridA();
+    public StringBuilder gridA() {
+        return this.grid.printGridA();
     }
 
     /** Print Player 2's Grid **/

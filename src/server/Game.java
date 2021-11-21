@@ -38,12 +38,16 @@ public class Game {
 
     public void playTwoPlayerGame(){
         Scanner scanner = new Scanner(System.in);
+        int turn = -1;
         while(!win()){
+            System.out.println("WIN: " + win());
             for(int i = 0; i < players.size(); i++){
                 int nextPlayer;
                 if(i == 0){
+                    turn = 0;
                     nextPlayer = 1;
                 }else{
+                    turn = 1;
                     nextPlayer = 0;
                 }
                 System.out.println(players.get(i).getName() + " it is your turn");
@@ -52,12 +56,39 @@ public class Game {
                 System.out.println("Choose target y: ");
                 int y = scanner.nextInt();
                 Player.markHit(players.get(nextPlayer), x, y);
+                System.out.println(players.get(i).toString());
+                System.out.println(players.get(nextPlayer));
             }
         }
+
+        System.out.println(players.get(turn).getName() + " has won! \n\tRESULTS:\n\n\n");
+        System.out.println(players.get(0));
+        System.out.println("\n\n\n");
+        System.out.println(players.get(1));
     }
 
     private boolean win(){
-        return false;
+        boolean result = false;
+
+        for(Player player : players){
+
+            boolean foundShip = false;
+            String gridString = String.valueOf(player.gridA());
+
+            for(char character : gridString.toCharArray()){
+                if (character == 'C' || character == 'B' || character == 'R' || character == 'S' ||
+                        character == 'D') {
+
+                    foundShip = true;
+                    break;
+                }
+            }
+
+            if (!foundShip) {
+                result = true;
+            }
+        }
+        return result;
     }
 
     public static void main(String[] args) {

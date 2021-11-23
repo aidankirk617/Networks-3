@@ -25,8 +25,18 @@ public class Game {
         String player1Name = scan.next();
         System.out.println("Player 2 name: ");
         String player2Name = scan.next();
-        System.out.println("Size of Grids: ");
-        int gridSize = scan.nextInt();
+
+        //default invalid grid size to go into loop
+        int gridSize = -1;
+        while (gridSize < 0 || gridSize > 10) {
+            try {
+                System.out.println("Size of Grids: ");
+                gridSize = scan.nextInt();
+            } catch (Exception e) {
+                System.out.println("Please enter a valid integer (0 - 10)");
+                scan.next();
+            }
+        }
 
         Player player1 = new Player(player1Name, 0, gridSize);
         Player player2 = new Player(player2Name, 1, gridSize);
@@ -38,9 +48,10 @@ public class Game {
 
     public void playTwoPlayerGame(){
         Scanner scanner = new Scanner(System.in);
+        int boardSize = players.get(0).getGrid().getLength();
         int turn = -1;
         while(!win()){
-            System.out.println("WIN: " + win());
+
             for(int i = 0; i < players.size(); i++){
                 int nextPlayer;
                 if(i == 0){
@@ -51,10 +62,22 @@ public class Game {
                     nextPlayer = 0;
                 }
                 System.out.println(players.get(i).getName() + " it is your turn");
-                System.out.println("Choose target x: ");
-                int x = scanner.nextInt();
-                System.out.println("Choose target y: ");
-                int y = scanner.nextInt();
+
+                //default values to invalid x and y to go into loop
+                int x = -1;
+                int y = -1;
+                while ((x < 0 || x > boardSize) || (y < 0 || y > boardSize)) {
+                    try {
+                        System.out.println("Choose target x (0-" + boardSize + "): ");
+                        x = scanner.nextInt();
+                        System.out.println("Choose target y (0-" + boardSize + "): ");
+                        y = scanner.nextInt();
+                    } catch (Exception e) {
+                        System.out.println("Error: enter a valid integer between 0 and " + boardSize);
+                        scanner.next();
+                    }
+                }
+
                 Player.markHit(players.get(nextPlayer), x, y);
                 System.out.println(players.get(i).toString());
                 System.out.println(players.get(nextPlayer));

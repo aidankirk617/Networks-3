@@ -79,8 +79,10 @@ public class Game {
                 }
 
                 Player.markHit(players.get(nextPlayer), x, y);
-                System.out.println(players.get(i).toString());
-                System.out.println(players.get(nextPlayer));
+                System.out.println("Your Grid:");
+                System.out.println(players.get(i).getGrid().printGridA() + "\n\n");
+                System.out.println(players.get(nextPlayer).getName() + "'s Grid:");
+                System.out.println(players.get(nextPlayer).getGrid().printGridB());
             }
         }
 

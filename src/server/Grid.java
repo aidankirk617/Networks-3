@@ -348,12 +348,12 @@ public class Grid {
         char hold = board[i][j];
         if (hold == 'C' || hold == 'B' || hold == 'R' ||
                 hold == 'S' || hold == 'D') {
-          result.append("|   ");
+          result.append(" |  ");
         } else {
-          result.append("| ").append(board[i][j]);
+          result.append(" | ").append(board[i][j]);
         }
       }
-      result.append("|");
+      result.append(" |");
       result.append('\n');
     }
     result.append(graphic);

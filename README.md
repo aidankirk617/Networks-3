@@ -7,7 +7,7 @@
 
 ###### This program simulates a game of Battleship that can be played accross a network. The game will eventually support up to 8 players concurently in the same game. The purpose of this project is to learn to implement concurrent network applications, Java threading, and enabling a TCP client to interact with users as well as with a TCP socket.
 
-# Instalation
+# Installation
 
 Download the source folder. Compile the program using javac from outside of the package directories.
 ```bash
@@ -54,6 +54,10 @@ If the game will not compile, try going into each package and compiling all java
 
 No current issues.
 
-#### Bugs and Fixes
+#### For David
 
-No known bugs at this time.
+Here's the rundown. Was able to get a game going that communicates between client and server, rather than earlier where it could only run on server. Seems to work fine? I was able to finish a game without it breaking. That being said, it has some prompts and i need to rewrite some more to let it use all the commands he described. I think the next logical step is for us to check out the connection agent and message stuff and get it working before we move on to threading. After we get threading going, we can finally do the whole "multiple" client bit he wanted, then we're all gucci. Text me if this didn't make any sense
+
+Oh yeah, also run BattleShipDriver.java first, and then BattleDriver.java. Once you have BattleDriver.java running, type '/start' to begin.
+
+CLA's for BattleShipDriver are 5000 5, and localhost 5000 player1 for BattleDriver. Should be able to type in your edit configurations in intellij.

@@ -8,6 +8,8 @@
 
 package server;
 
+import client.Player;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -358,6 +360,10 @@ public class Grid {
     }
     result.append(graphic);
     return result;
+  }
+
+  public char[][] getGrid() {
+    return board;
   }
 
   /** Main **/

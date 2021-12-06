@@ -1,40 +1,44 @@
-/*
- * Western Carolina University
- * Fall 2021
- * CS-465-01 - Computer Networks
- * Program 3: Battleship (Multiuser Game)
- * Instructor: Dr. Scott Barlowe
+/**
+ * Ship
+ * Enumeration that represents the values of ships in Battleship.
+ * @author Aidan Kirk, David Jennings
+ * @version 11/20/21
  */
 
 package server;
 
 public enum Ship {
-    CARRIER('C', 2, 0),
-    BATTLESHIP('B', 3, 1),
-    CRUISER('R', 4, 2),
-    SUBMARINE('S', 3, 3),
-    DESTROYER('D', 5, 4),
+    CARRIER('C', 2, 0),     // Carrier
+    BATTLESHIP('B', 3, 1),  // Battleship
+    CRUISER('R', 4, 2),     // Cruiser
+    SUBMARINE('S', 3, 3),   // Submarine
+    DESTROYER('D', 5, 4),   // Destroyer
     BLANK(' ', -1,  -1);
 
-    private final int size;
-    private final int value;
-    private final char marker;
+    /** Variables **/
+    private final int size;     // Variable for size of ship
+    private final int value;    // Variable for value of ship
+    private final char marker;  // Variable for marker space
 
-    private Ship(char marker, int size, int value) {
-        this.marker = marker;
-        this.size = size;
-        this.value = value;
+    /** Constructor of ship **/
+    private Ship(char marker, int size, int value) {    // TODO: Does this need to be private?
+        this.marker = marker;   // Initialize marker
+        this.size = size;       // Initialize size
+        this.value = value;     // Initialize value
     }
 
-    public char getMarker() {
+    /** Getter method for marker **/
+    public char getMarker() {   // Get specified marker
         return marker;
     }
 
-    public int getSize() {
+    /** Getter method for size **/
+    public int getSize() {      // Get specified marker of ship
         return size;
     }
 
-    public int getValue() {
+    /** Getter method for value **/
+    public int getValue() {     // Get value of ship
         return value;
     }
 }

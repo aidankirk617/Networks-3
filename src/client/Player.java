@@ -1,18 +1,26 @@
-package server;
+package client;
 
-public class Player {
+import server.Grid;
+
+import java.io.Serializable;
+
+public class Player implements Serializable {
 
     /** Fields **/
     private String name;        // The Players Name
     private boolean winner;     // Determines if the player has won or not
     private int turn;           // Determines if it is the players turn or not
-    private Grid grid;           // Determines the players grid
+    private Grid grid;          // Determines the players grid
 
     // Initialize values for the player class
     public Player(){
         this.name = new String();
         this.winner = false;
         this.turn = 0;
+    }
+
+    public Player(String name) {
+        this.name = name;
     }
 
     /** Constructor for getter methods **/
@@ -22,32 +30,12 @@ public class Player {
         this.grid = new Grid(size);
     }
 
-    /** Setter for player name **/
-    public void setName(){
-        this.name = name;
-    }
-
-    /** Setter for winner boolean **/
-    public void setWinner(){
-        this.winner = winner;
-    }
-
-    /** Setter for player turn **/
-    public void setTurn(){
-        this.turn = turn;
-    }
-
-    /** Setter for grid **/
-    public void setGrid(){
-        this.grid = grid;
-    }
-
     /** Getter method for player turn **/
     public int getTurn(){
         return turn;
     }
 
-    /** Getter for player name **/
+    /** Getter for player nam   e **/
     public String getName(){
         return name;
     }
@@ -57,9 +45,14 @@ public class Player {
         return grid;
     }
 
+    public void gridGen(int size) {
+        this.grid = new Grid(size);
+        grid.randPlacement();
+    }
+
     /** Print Player 1's Grid **/
-    public void gridA() {
-        this.grid.printGridA();
+    public StringBuilder gridA() {
+        return this.grid.printGridA();
     }
 
     /** Print Player 2's Grid **/

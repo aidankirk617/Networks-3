@@ -1,27 +1,66 @@
-/*
- * Western Carolina University
- * Fall 2021
- * CS-465-01 - Computer Networks
- * Program 3: Battleship (Multiuser Game)
- * Instructor: Dr. Scott Barlowe
- */
-
 package server;
 
+import client.Player;
 import common.MessageListener;
 import common.MessageSource;
+
+import java.io.*;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class BattleServer implements MessageListener {
-
     private ServerSocket serverSocket;
     private int current;
     private Game game;
+    private int size;
 
-    public BattleServer(int port) {
+    public BattleServer(int port, int size) {
+        this.game = new Game(size);
+        this.size = size;
+        try {
+            this.serverSocket = new ServerSocket(port);
+        } catch (IOException ioe) {
+            System.out.println("Error: IO Exception " + ioe.getMessage());
+            System.exit(1);
+        }
+
     }
 
     public void listen() {
+        try {
+            //input objects
+            Socket sock = serverSocket.accept();
+            InputStream is = sock.getInputStream();
+            ObjectInputStream ois = new ObjectInputStream(is);
+
+            //output objects
+            OutputStream os = sock.getOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(os);
+
+            //receive the player
+            Player p1 = (Player) ois.readObject();
+            p1.gridGen(size);
+            game.addPlayer(p1);
+            System.out.println("Player " + p1.getName() + " connected");
+
+            //receive mock player
+            Player p2 = (Player) ois.readObject();
+            p2.gridGen(size);
+            game.addPlayer(p2);
+            System.out.println("Player " + p2.getName() + " connected");
+
+            //receive input to start game/close
+            String command = (String) ois.readObject();
+            if (command.equals("/start")) {
+                game.play(oos, ois);
+            }
+
+
+
+        } catch (IOException | ClassNotFoundException ioe) {
+            System.out.println("Error: IO Exception " + ioe.getMessage());
+            System.exit(2);
+        }
 
     }
 

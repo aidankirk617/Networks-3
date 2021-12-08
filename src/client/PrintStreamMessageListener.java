@@ -29,7 +29,7 @@ public class PrintStreamMessageListener implements MessageListener {
      */
     @Override
     public void messageReceived(String message, MessageSource source) {
-
+        source.addMessageListener(this);
     }
 
     /**
@@ -40,6 +40,6 @@ public class PrintStreamMessageListener implements MessageListener {
      */
     @Override
     public void sourceClosed(MessageSource source) {
-
+        source.removeMessageListener(this);
     }
 }

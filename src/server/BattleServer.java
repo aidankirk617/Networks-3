@@ -76,7 +76,10 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void messageReceived(String message, MessageSource source) {
-
+        //Not sure if this is how the message receiving is supposed to work, but I need the
+        // connection agents to be working in order to test it. Same with the method below
+        source.addMessageListener(this);
+        this.broadcast(message);
     }
 
     /**
@@ -87,6 +90,6 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void sourceClosed(MessageSource source) {
-
+        source.removeMessageListener(this);
     }
 }

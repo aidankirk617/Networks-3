@@ -1,19 +1,20 @@
 package client;
 
+import common.ConnectionAgent;
 import common.MessageListener;
 import common.MessageSource;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Scanner;
 
 public class BattleClient extends MessageSource implements MessageListener {
 
     private InetAddress host;
     private int port;
     private String username;
+    private ConnectionAgent connection;
 
     public BattleClient(String hostname, int port, String username) {
         try {
@@ -27,55 +28,13 @@ public class BattleClient extends MessageSource implements MessageListener {
     }
 
     public void connect() {
-        Player p = new Player(this.username);
-        Socket sock;
-        Scanner scan = new Scanner(System.in);
         try {
-            //output objs
-            sock = new Socket(this.host, this.port);
-            PrintStream out = new PrintStream(sock.getOutputStream());
-            ObjectOutputStream oos = new ObjectOutputStream(out);
-
-            //input objs
-            InputStream is = sock.getInputStream();
-            ObjectInputStream ois = new ObjectInputStream(is);
-
-            //send player info once connected
-            oos.writeObject(p);
-
-            //send mock player
-            oos.writeObject(new Player("P2"));
-
-            //Take input
-            String input = scan.next();
-            //if its start, write 1 to signal start
-            if (input.equals("/start")) {
-                oos.writeObject(input);
-            } else {
-                oos.writeObject("stinky");
-            }
-            boolean end = true;
-            while (end) {
-                String str = (String) ois.readObject();
-                if (str != null && !str.contains("shoot")) {
-                    System.out.println(str);
-                } else if (str != null && str.contains("shoot")) {
-                    System.out.println(str);
-                    oos.writeObject(scan.next());
-                    oos.writeObject(scan.next());
-                    //String coords = scan.next();
-                    //oos.writeObject(coords);
-                } else {
-                    end = false;
-                }
-            }
-
-
-        } catch (IOException | ClassNotFoundException ioe) {
-            System.out.println("Error: IO Exception " + ioe.getMessage());
-            System.exit(2);
+            Socket socket = new Socket(host, port);
+            connection = new ConnectionAgent(socket);
+            System.out.println("Connected to: " + socket);
+        } catch (IOException e) {
+            System.out.println("ERROR");
         }
-        //ConnectionAgent client = new ConnectionAgent(sock, p);
 
     }
 
@@ -105,6 +64,6 @@ public class BattleClient extends MessageSource implements MessageListener {
     }
 
     public void send(String message) {
-
+        connection.sendMessage(message);
     }
 }

@@ -1,18 +1,29 @@
+/*
+ * Western Carolina University
+ * Fall 2021
+ * CS-465-01 - Computer Networks
+ * Program 3: Battleship (Multiuser Game)
+ * Instructor: Dr. Scott Barlowe
+ */
+
 package server;
 
 import client.Player;
+import common.ConnectionAgent;
 import common.MessageListener;
 import common.MessageSource;
-
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class BattleServer implements MessageListener {
     private ServerSocket serverSocket;
     private int current;
     private Game game;
     private int size;
+    private ArrayList<ConnectionAgent> connections;
 
     public BattleServer(int port, int size) {
         this.game = new Game(size);
@@ -23,45 +34,43 @@ public class BattleServer implements MessageListener {
             System.out.println("Error: IO Exception " + ioe.getMessage());
             System.exit(1);
         }
-
+        connections = new ArrayList<>();
     }
 
     public void listen() {
         try {
-            //input objects
-            Socket sock = serverSocket.accept();
-            InputStream is = sock.getInputStream();
-            ObjectInputStream ois = new ObjectInputStream(is);
-
-            //output objects
-            OutputStream os = sock.getOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(os);
-
-            //receive the player
-            Player p1 = (Player) ois.readObject();
-            p1.gridGen(size);
-            game.addPlayer(p1);
-            System.out.println("Player " + p1.getName() + " connected");
-
-            //receive mock player
-            Player p2 = (Player) ois.readObject();
-            p2.gridGen(size);
-            game.addPlayer(p2);
-            System.out.println("Player " + p2.getName() + " connected");
-
-            //receive input to start game/close
-            String command = (String) ois.readObject();
-            if (command.equals("/start")) {
-                game.play(oos, ois);
+            boolean done = false;
+            while (!done) {
+                Socket sock = serverSocket.accept();
+                OutputStream os = sock.getOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(os);
+                InputStream is = sock.getInputStream();
+                ObjectInputStream ois = new ObjectInputStream(is);
+                Scanner scan = new Scanner(System.in);
+                Player p = (Player) ois.readObject();
+                p.gridGen(size);
+                game.addPlayer(p);
+                ConnectionAgent ca = new ConnectionAgent(sock, oos, ois, scan, p);
+                connections.add(ca);
+                Thread t = new Thread(ca);
+                System.out.println("Player " + p.getName() + " connected");
+                t.start();
+                if (game.players.size() >= 2) {
+                    //receive input to start game/close
+                    String command = (String) connections.get(0).getOis().readObject(); //only p1 can start the game
+                    if (command.equals("/start")) {
+                        for (int i = 0; i < connections.size(); i++) {
+                            connections.get(i).getOos().writeObject("The game begins");
+                        }
+                        game.play(connections);
+                        done = true;
+                    }
+                }
             }
-
-
-
         } catch (IOException | ClassNotFoundException ioe) {
             System.out.println("Error: IO Exception " + ioe.getMessage());
             System.exit(2);
         }
-
     }
 
     public void broadcast(String message) {
@@ -76,7 +85,10 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void messageReceived(String message, MessageSource source) {
-
+        //Not sure if this is how the message receiving is supposed to work, but I need the
+        // connection agents to be working in order to test it. Same with the method below
+        source.addMessageListener(this);
+        this.broadcast(message);
     }
 
     /**
@@ -87,6 +99,6 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void sourceClosed(MessageSource source) {
-
+        source.removeMessageListener(this);
     }
 }

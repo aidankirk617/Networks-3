@@ -1,5 +1,14 @@
+/*
+ * Western Carolina University
+ * Fall 2021
+ * CS-465-01 - Computer Networks
+ * Program 3: Battleship (Multiuser Game)
+ * Instructor: Dr. Scott Barlowe
+ */
+
 package common;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +88,7 @@ public abstract class MessageSource {
              */
             try {
                 listener.messageReceived(message, this);
-            } catch (RuntimeException ex) {
+            } catch (RuntimeException | IOException ex) {
                 /*
                  * We're doing this on a best-effort basis. If something goes wrong, we don't want
                  * to stop. Here, we simply dump the stack and continue.

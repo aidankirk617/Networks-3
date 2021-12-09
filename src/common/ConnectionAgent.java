@@ -47,7 +47,7 @@ public class ConnectionAgent extends MessageSource implements Runnable {
     public void run() {
         while(true) {
             try {
-                String received = in.next();
+                String received = in.nextLine();
                 if (received.equals("/surrender")) {
                     System.out.println("Client: " + socket + " is disconnecting...");
                     socket.close();

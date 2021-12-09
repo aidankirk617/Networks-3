@@ -29,7 +29,7 @@ public class BattleDriver {
 
         while (true){
             Scanner input = new Scanner(System.in);
-            String message = input.next();
+            String message = input.nextLine();
 
             bc.send(message);
 

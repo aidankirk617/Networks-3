@@ -23,8 +23,10 @@ public class ConnectionAgent extends MessageSource implements Runnable {
     public ConnectionAgent(Socket sock){
         try {
             socket = sock;
+
             in = new Scanner(socket.getInputStream());
             out = new PrintStream(socket.getOutputStream());
+
         }catch (IOException ioe){
             System.out.println("ERROR IN CONNECTION AGENT");
         }
@@ -36,31 +38,38 @@ public class ConnectionAgent extends MessageSource implements Runnable {
     }
 
     public boolean isConnected(){
-        return socket.isConnected();
+        return !socket.isClosed();
     }
 
-    public void close() throws IOException {
-        socket.close();
+    public void close(){
+        this.closeMessageSource();
     }
 
     @Override
     public void run() {
-        while(true) {
+        while(isConnected()) {
             try {
                 String received = in.nextLine();
-                if (received.equals("/surrender")) {
+                if(received.equals("/surrender")){
                     System.out.println("Client: " + socket + " is disconnecting...");
                     socket.close();
                     System.out.println("Client disconnected");
-
                     break;
+                }else if(received.equals("/test")){
+                    notifyReceipt("We have a test");
                 }
-
-                System.out.println("Message received: " + received);
+                notifyReceipt(received);
 
             }catch(IOException ioe){
                 System.out.println("ERROR IN CONNECTION AGENT: 56");
             }
         }
+        this.close();
+        in.close();
+        out.close();
+    }
+
+    public void start(){
+        thread.start();
     }
 }

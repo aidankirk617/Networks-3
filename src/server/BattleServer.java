@@ -29,9 +29,10 @@ public class BattleServer implements MessageListener {
         while(!serverSocket.isClosed()){
             try{
                 ConnectionAgent connection = new ConnectionAgent(serverSocket.accept());
+                connection.addMessageListener(this);
                 connections.add(connection);
                 System.out.println("Connection established: " + connection);
-                connection.run();
+                connection.start();
             }catch (IOException ioe){
                 System.out.println("ERROR IN BATTLE SERVER");
             }
@@ -40,7 +41,9 @@ public class BattleServer implements MessageListener {
     }
 
     public void broadcast(String message) {
-
+        for(ConnectionAgent connection : connections){
+            connection.sendMessage(message);
+        }
     }
 
     /**
@@ -53,7 +56,7 @@ public class BattleServer implements MessageListener {
     public void messageReceived(String message, MessageSource source) {
         //Not sure if this is how the message receiving is supposed to work, but I need the
         // connection agents to be working in order to test it. Same with the method below
-        source.addMessageListener(this);
+        // source.addMessageListener(this);
         this.broadcast(message);
     }
 

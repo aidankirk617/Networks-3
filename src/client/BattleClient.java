@@ -31,7 +31,9 @@ public class BattleClient extends MessageSource implements MessageListener {
         try {
             Socket socket = new Socket(host, port);
             connection = new ConnectionAgent(socket);
+            connection.addMessageListener(this);
             System.out.println("Connected to: " + socket);
+            connection.start();
         } catch (IOException e) {
             System.out.println("ERROR");
         }
@@ -48,8 +50,7 @@ public class BattleClient extends MessageSource implements MessageListener {
     public void messageReceived(String message, MessageSource source) {
         //Not sure if this is how the message receiving is supposed to work, but I need the
         // connection agents to be working in order to test it. Same with the method below
-        source.addMessageListener(this);
-        this.send(message);
+        System.out.println(message);
     }
 
     /**

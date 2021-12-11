@@ -1,9 +1,15 @@
+/**
+ * BattleClient
+ * Allows users to establish individual client to server connections in order to play battleship
+ * @author Aidan Kirk, David Jennings
+ * @version 11/20/21
+ */
+
 package client;
 
 import common.ConnectionAgent;
 import common.MessageListener;
 import common.MessageSource;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -11,11 +17,18 @@ import java.net.UnknownHostException;
 
 public class BattleClient extends MessageSource implements MessageListener {
 
+    // Initialize fields
     private InetAddress host;
     private int port;
     private String username;
     private ConnectionAgent connection;
 
+    /** Assigns hostname, port, and username to users BattleClient
+     *
+     * @param hostname - hostname that BattleShip runs on
+     * @param port - port number that BattleShip runs on
+     * @param username - allows players to assign themselves usernames
+     **/
     public BattleClient(String hostname, int port, String username) {
         try {
             this.host = InetAddress.getByName(hostname);
@@ -27,6 +40,7 @@ public class BattleClient extends MessageSource implements MessageListener {
         this.username = username;
     }
 
+    /** Connects BattleClient **/
     public void connect() {
         try {
             Socket socket = new Socket(host, port);
@@ -49,8 +63,6 @@ public class BattleClient extends MessageSource implements MessageListener {
      */
     @Override
     public void messageReceived(String message, MessageSource source) {
-        //Not sure if this is how the message receiving is supposed to work, but I need the
-        // connection agents to be working in order to test it. Same with the method below
         System.out.println(message);
     }
 

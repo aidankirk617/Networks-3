@@ -1,18 +1,20 @@
-/*
- * Western Carolina University
- * Fall 2021
- * CS-465-01 - Computer Networks
- * Program 3: Battleship (Multiuser Game)
- * Instructor: Dr. Scott Barlowe
+/**
+ * PrintStreamMessageListener
+ *
+ * Responsible for writing messages to a PrintStream.
+ * The class implements the MessageListener interface, indicating that it plays the role of “observer”
+ * in an instance of the observer pattern.
+ * @author Aidan Kirk, David Jennings
+ * @version 12/11/21 
  */
 
 package client;
 
 import common.MessageListener;
 import common.MessageSource;
-
 import java.io.PrintStream;
 
+/** **/
 public class PrintStreamMessageListener implements MessageListener {
 
     private PrintStream out;

@@ -1,3 +1,10 @@
+/**
+ * Game
+ * Game contains the logic for the game of BattleShip. It has a Grid for each client.
+ * @author Aidan Kirk, David Jennings
+ * @version 12/11/21
+ */
+
 package server;
 
 import java.io.IOException;
@@ -11,7 +18,7 @@ public class Game {
     /**An arraylist of players that are participating in this game**/
     ArrayList<Player> players;
 
-    int gridSize;
+    int gridSize;   // Size of the battleship game grid
 
     /**
      * Creates a game with 2 players
@@ -23,8 +30,8 @@ public class Game {
      */
 
     public Game(int gridSize) {
-        players = new ArrayList<>();
-        this.gridSize = gridSize;
+        players = new ArrayList<>();    // Register and keep track of players in an array list
+        this.gridSize = gridSize;       // Initialize grid size
     }
 
     /**
@@ -32,33 +39,33 @@ public class Game {
      * @return true if a player has won, false otherwise
      */
     private boolean checkWin() {
+        // Keep result false unless win conditions are met
         boolean result = false;
         for (Player player : players) {
             char[][] pGrid = player.getGrid().getGrid();
             boolean isShip = false;
             for (char[] chars : pGrid) {
                 for (char positionChar : chars) {
+                    // Check all spots for ship types
                     if (positionChar == 'C' || positionChar == 'B' || positionChar == 'R' ||
                             positionChar == 'S' || positionChar == 'D') {
-                        //check every spot for ships
                         isShip = true;
                         break;
                     }
                 }
             }
-            if (!isShip) { //if we didn't find a ship, then it's a win
+            if (!isShip) { // If no ship is found, return a win
                 result = true;
             }
         }
-        //otherwise, there's still ships left
-        return result;
+        return result;  // Otherwise, we still have ships
     }
 
     /**
      * Plays through a game of battleship
      */
     public void play(ObjectOutputStream oos, ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        int current = -1;
+        int current = -1;   // ???
         Scanner scan  = new Scanner(System.in);
         while (!checkWin()) {
             for (int i = 0; i < players.size(); i++) {
@@ -74,17 +81,18 @@ public class Game {
                 this.shootInput(players.get(i), players.get(next), scan, oos, ois);
             }
         }
-        String str = players.get(current).getName() + " has won!\n";
+        String str = players.get(current).getName() + " has won!\n";    // Announce this games winner
         str += players.get(0).getName() + "'s board\n" + players.get(0).getGrid().printGridA() + "\n\n";
         str += players.get(1).getName() + "'s board\n" + players.get(1).getGrid().printGridA();
         oos.writeObject(str);
         oos.writeObject(null);
     }
 
+    /** Builds the prompt for players **/
     private String buildPrompt(Player p1, Player p2) {
-        String str = p1.getName() + " it is your turn\n";
-        str += p2.getName() + "'s grid: \n";
-        str += p2.getGrid().printGridA() + "\n";
+        String str = p1.getName() + " it is your turn\n";   // Prompt player for turn
+        str += p2.getName() + "'s grid: \n";    // Message for displaying enemies grid
+        str += p2.getGrid().printGridA() + "\n";    // Display both grids
         return str;
     }
 
@@ -100,26 +108,24 @@ public class Game {
         int yCord = -1;
         oos.writeObject("Please type your numeric x and y coordinates to shoot > ");
         while (!valid) {
+            // Loop as long as it's still the players turn
             try {
                 String x = (String) ois.readObject();
                 String y = (String) ois.readObject();
                 xCord = Integer.parseInt(x);
                 yCord = Integer.parseInt(y);
+                // It is no longer the players turn
                 valid = true;
-            } catch (InputMismatchException ime) {
+            } catch (InputMismatchException ime) {  // If invalid input is provided, throw an InputMisMatchException
                 System.out.println("Error: Invalid Input");
-                System.exit(3);
+                System.exit(3);     // Exit with error code 3
             }
         }
         Boolean result = shooter.markHit(gettingShot, xCord, yCord);
         if (result) {
-            oos.writeObject("Hit!");
+            oos.writeObject("Hit!");    // Mark coordinates with a hit
         } else {
-            oos.writeObject("Miss!");
+            oos.writeObject("Miss!");   // Mark coordinates with a miss
         }
-    }
-
-    public void addPlayer(Player player) {
-        players.add(player);
     }
 }

@@ -2,7 +2,7 @@
  * Ship
  * Enumeration that represents the values of ships in Battleship.
  * @author Aidan Kirk, David Jennings
- * @version 11/20/21
+ * @version 12/11/21
  */
 
 package server;
@@ -21,7 +21,7 @@ public enum Ship {
     private final char marker;  // Variable for marker space
 
     /** Constructor of ship **/
-    private Ship(char marker, int size, int value) {    // TODO: Does this need to be private?
+    private Ship(char marker, int size, int value) {
         this.marker = marker;   // Initialize marker
         this.size = size;       // Initialize size
         this.value = value;     // Initialize value

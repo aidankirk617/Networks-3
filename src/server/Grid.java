@@ -1,17 +1,14 @@
-/*
- * Western Carolina University
- * Fall 2021
- * CS-465-01 - Computer Networks
- * Program 3: Battleship (Multiuser Game)
- * Instructor: Dr. Scott Barlowe
+/**
+ * Grid
+ * Grid is the logic for a single board of Battleship.
+ * @author Aidan Kirk, David Jennings
+ * @version 12/11/21
  */
 
 package server;
 
 import java.util.Arrays;
 import java.util.Random;
-
-// TODO: maybe move ship logic to different file
 
 /**
  * <h2>This class will represent the grid in a game of battleship.</h2>
@@ -71,35 +68,35 @@ public class Grid {
   public void placeShip(Ship ship, int axisX, int axisY, String direction)
           throws ArrayIndexOutOfBoundsException {
 
-    int size = ship.getSize(); // size of ship to be placed
+    int size = ship.getSize(); // Size of ship to be placed
 
-    //Switch on direction: up, down, left, right. Checks every direction to look at spaces.
+    // Switch on direction: up, down, left, right. Checks every direction to look at spaces.
     switch (direction) {
       case "left":
-        if(canPlace(size,axisX,axisY,direction)){ // if the ship can be placed, begin placing
+        if(canPlace(size,axisX,axisY,direction)){ // If the ship can be placed, begin placing
           for (int i = 0; i < size; i++) {
-            board[axisY][axisX + i] = ship.getMarker(); // place marker for the board at each spot
+            board[axisY][axisX + i] = ship.getMarker(); // Place marker for the board at each spot
           }
         }
         break;
       case "right":
-        if(canPlace(size,axisX,axisY,direction)){ // if the ship can be placed, begin placing
+        if(canPlace(size,axisX,axisY,direction)){ // If the ship can be placed, begin placing
           for (int i = 0; i < size; i++) {
-            board[axisY][axisX - i] = ship.getMarker(); // place marker for the board at each spot
+            board[axisY][axisX - i] = ship.getMarker(); // Place marker for the board at each spot
           }
         }
         break;
       case "up":
-        if(canPlace(size,axisX,axisY,direction)){ // if the ship can be placed, begin placing
+        if(canPlace(size,axisX,axisY,direction)){ // If the ship can be placed, begin placing
           for (int i = 0; i < size; i++) {
-            board[axisY - i][axisX] = ship.getMarker(); // place marker for the board at each spot
+            board[axisY - i][axisX] = ship.getMarker(); // Place marker for the board at each spot
           }
         }
         break;
       case "down":
-        if(canPlace(size,axisX,axisY,direction)){ // if the ship can be placed, begin placing
+        if(canPlace(size,axisX,axisY,direction)){ // If the ship can be placed, begin placing
           for (int i = 0; i < size; i++) {
-            board[axisY + i][axisX] = ship.getMarker(); // place marker for the board at each spot
+            board[axisY + i][axisX] = ship.getMarker(); // Place marker for the board at each spot
           }
         }
         break;
@@ -118,50 +115,54 @@ public class Grid {
 
     boolean result = false;
 
-    //Switch on direction: up, down, left, right. Checks every direction to look at spaces.
+    // Switch on direction: up, down, left, right. Checks every direction to look at spaces.
     switch (direction) {
       case "left":
         for (int i = 0; i < shipSize; i++) {
-          if (check(xAxis + i, yAxis)) { //if the space is empty, result is true
+          if (check(xAxis + i, yAxis)) { // If the space is empty, result is true
             result = true;
           }else{
-            result = false; // if the space is not empty, result is false, break from loop and return.
+            result = false; // If the space is not empty, result is false, break from loop and return.
             break;
           }
         }
         break;
       case "right":
         for (int i = 0; i < shipSize; i++) {
-          if (check(xAxis - i, yAxis)) { //if the space is empty, result is true
+          if (check(xAxis - i, yAxis)) { // If the space is empty, result is true
             result = true;
           }else{
-            result = false; // if the space is not empty, result is false, break from loop and return.
+            result = false; // If the space is not empty, result is false, break from loop and return.
             break;
           }
         }
         break;
       case "up":
         for (int i = 0; i < shipSize; i++) {
-          if (check(xAxis, yAxis - i)) { //if the space is empty, result is true
+          // If the space is empty, result is true
+          if (check(xAxis, yAxis - i)) {
             result = true;
           }else{
-            result = false; // if the space is not empty, result is false, break from loop and return.
+            // If the space is not empty, result is false, break from loop and return.
+            result = false;
             break;
           }
         }
         break;
       case "down":
         for (int i = 0; i < shipSize; i++) {
-          if (check(xAxis, yAxis + i)) { //if the space is empty, result is true
+          // If the space is empty, result is true
+          if (check(xAxis, yAxis + i)) {
             result = true;
-          }else{
-            result = false; // if the space is not empty, result is false, break from loop and return.
+          } else {
+            // If the space is not empty, result is false, break from loop and return
+            result = false;
             break;
           }
         }
         break;
     }
-
+    // Return location
     return result;
   }
 
@@ -173,7 +174,9 @@ public class Grid {
    */
   public boolean check(int x, int y) {
     try{
+      // Check board to see if space is empty
       return board[y][x] == ' ';
+      // If out of bounds, throw appropriate exceptions
     }catch(ArrayIndexOutOfBoundsException arrayIndexOutOfBoundsException){
       return false;
     }
@@ -184,21 +187,21 @@ public class Grid {
    */
   public void randPlacement() {
 
-    int num = amount(); //number of ships to be placed
+    int num = amount(); // Number of ships
 
     while (num > 0) {
 
-      Ship ship = randShip(); // generate random ship to be placed
+      Ship ship = randShip(); // Generate random ship to be placed
 
-      int x = randCoordinate(); //generate random coordinate to represent x-axis
-      int y = randCoordinate(); //generate random coordinate to represent y-axis
+      int x = randCoordinate(); // Generate random coordinate to represent x-axis
+      int y = randCoordinate(); // Generate random coordinate to represent y-axis
 
-      String direction = randDirection(); // generate random direction for ship to be placed
+      String direction = randDirection(); // Generate random direction for ship to be placed
 
       assert ship != null;
       if(canPlace(ship.getSize(), x, y, direction)){
         placeShip(ship, x, y, direction);
-        num--; // only decrement num when a ship is successfully placed
+        num--; // Only decrement num when a ship is successfully placed
       }
     }
   }
@@ -209,17 +212,17 @@ public class Grid {
    */
   private Ship randShip() {
     Random random = new Random();
-    int rand = random.nextInt(5); //the number of types of Ship + 1 (to account for 0)
+    int rand = random.nextInt(5); // Ship + 1
     if (rand == 0) {
-      return Ship.CARRIER;
+      return Ship.CARRIER;    // 0 - CARRIER
     } else if (rand == 1) {
-      return Ship.BATTLESHIP;
+      return Ship.BATTLESHIP; // 1 - BATTLESHIP
     } else if (rand == 2) {
-      return Ship.CRUISER;
+      return Ship.CRUISER;    // 2 - CRUISER
     } else if (rand == 3) {
-      return Ship.SUBMARINE;
-    } else { // if number is not 0-3 it must be 4
-      return Ship.DESTROYER;
+      return Ship.SUBMARINE;  // 3 - SUBMARINE
+    } else {
+      return Ship.DESTROYER;  // 4 - DESTROYER
     }
   }
 
@@ -232,16 +235,16 @@ public class Grid {
 
     int num = 0;
 
-    if (board.length == 10) { // if board is 10 x 10 : number between 4-6
+    if (board.length == 10) { // If board is 10 x 10 : number between 4-6
       num = (int) ((Math.random() * (7 - 4)) + 4);
-    } else if (board.length == 9 || board.length == 8) { //if board is 8x8 or 9x9 : number between 4-6
+    } else if (board.length == 9 || board.length == 8) { // If board is 8x8 or 9x9 : number between 4-6
       num = (int) ((Math.random() * (6 - 3)) + 3);
-    } else if (board.length == 7 || board.length == 6) { //if board is 7x7 or 6x6 : number between 4-6
+    } else if (board.length == 7 || board.length == 6) { // If board is 7x7 or 6x6 : number between 4-6
       num = (int) ((Math.random() * (4 - 2)) + 2);
-    } else if (board.length == 5) { // if board is 5 x 5 : number between 4-6
+    } else if (board.length == 5) { // If board is 5 x 5 : number between 4-6
       num = (int) ((Math.random() * (3 - 1)) + 1);
     }
-    return num;
+    return num; // Return the number of ships
   }
 
   /**
@@ -249,8 +252,8 @@ public class Grid {
    * @return a random number within the range of the size of the board.
    */
   public int randCoordinate() {
-    Random random = new Random();
-    return random.nextInt(size);
+    Random random = new Random(); // Create new random instance
+    return random.nextInt(size);  // Use random instance to generate random coordinate
   }
 
   /**
@@ -262,39 +265,46 @@ public class Grid {
     int num = random.nextInt(5);
     String direction = "";
     if (num == 0) {
-      direction = "left";
+      direction = "left";   // 0 - Left
     } else if (num == 1) {
-      direction = "right";
+      direction = "right";  // 1 - Right
     } else if (num == 2) {
-      direction = "up";
+      direction = "up";     // 2 - Up
     } else if (num == 3) {
-      direction = "down";
+      direction = "down";   // 3 - Down
     }
     return direction;
   }
 
+  /** Gets length of the board **/
   public int getLength() {
     return this.board.length;
   }
 
+  /** Error checks for valid coordinates from player, gets board space **/
   public char getSpace(int x, int y){
+    // If x defies board length, or is a negative coordinate, prompt player
     if( x > board.length || x < 0){
       System.out.println("PLEASE ENTER VALID X COORDINATE");
       return '!';
+    // If y defies board length, or is a negative coordinate, prompt player
     }if( y > board.length || y < 0){
       System.out.println("PLEASE ENTER VALID Y COORDINATE");
       return '!';
     }
-    return board[x][y];
+    return board[x][y]; // Get space
   }
 
+  /** Sets space values for hits and misses **/
   public void setSpace(char value, int x, int y){
+    // If x defies board length, or is a negative coordinate, prompt player
     if( x > board.length || x < 0){
       System.out.println("PLEASE ENTER VALID X COORDINATE");
+    // If y defies board length, or is a negative coordinate, prompt player
     }else if( y > board.length || y < 0){
       System.out.println("PLEASE ENTER VALID Y COORDINATE");
     }else
-      board[x][y] = value;
+      board[x][y] = value; // Set space
   }
 
   /**
@@ -360,8 +370,8 @@ public class Grid {
     return result;
   }
 
+  /** Gets board space **/
   public char[][] getGrid() {
     return board;
   }
-
 }

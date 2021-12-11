@@ -1,9 +1,8 @@
-/*
- * Western Carolina University
- * Fall 2021
- * CS-465-01 - Computer Networks
- * Program 3: Battleship (Multiuser Game)
- * Instructor: Dr. Scott Barlowe
+/**
+ * Ship
+ * Enumeration that represents the values of ships in Battleship.
+ * @author Aidan Kirk, David Jennings
+ * @version 11/20/21
  */
 
 package client;
@@ -21,9 +20,9 @@ public class Player implements Serializable {
 
     // Initialize values for the player class
     public Player(){
-        this.name = new String();
-        this.winner = false;
-        this.turn = 0;
+        this.name = new String();   // Initialize value of players name
+        this.winner = false;        // Initialize win values
+        this.turn = 0;              // Initialize the turn
     }
 
     public Player(String name) {
@@ -32,9 +31,9 @@ public class Player implements Serializable {
 
     /** Constructor for getter methods **/
     public Player(String name, int turn, int size){
-        this.name = name;
-        this.turn = turn;
-        this.grid = new Grid(size);
+        this.name = name;                           // Initialize player name
+        this.turn = turn;                           // Initialize the players turn
+        this.grid = new Grid(size);                 // Initialize grid
     }
 
     /** Getter method for player turn **/
@@ -73,21 +72,22 @@ public class Player implements Serializable {
                 axisY >=player.getGrid().getLength() || axisY < 0) {
             return false;
         }
-        char hold = player.grid.getSpace(axisX, axisY);     // Check hit
+        char hold = player.grid.getSpace(axisX, axisY);  // Check hit
         if (hold == 'C' || hold == 'B' || hold == 'R' ||
                 hold == 'S' || hold == 'D') {
 
-            player.grid.setSpace('X', axisX, axisY);              // Set hit
+            player.grid.setSpace('X', axisX, axisY);  // Set hit
             return true;
         } else if (hold == ' ') {
             //set char there to O for miss
-            player.grid.setSpace('O', axisX, axisY);              // Set miss
+            player.grid.setSpace('O', axisX, axisY);  // Set miss
             return true;
         } else {
             return false;
         }
     }
 
+    // Tester method for printing strings
     @Override
     public String toString() {
         return "Name: " + this.getName() +  "\n\tTurn: " + this.getTurn() + "\n\tGrid: \n" + this.getGrid().printGridA();

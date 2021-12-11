@@ -1,9 +1,13 @@
-/*
- * Western Carolina University
- * Fall 2021
- * CS-465-01 - Computer Networks
- * Program 3: Battleship (Multiuser Game)
- * Instructor: Dr. Scott Barlowe
+/**
+ * MessageSource
+ * MessageSource is a class that implements the “subject” code necessary to notify “observers” of the receipt
+ * of a message. Any class that is capable of receiving a message must extend this class. Upon receipt of a
+ * message, that class must invoke the notifyReceipt() method to forward the received message to any registered
+ * observers. When a message source is closed (i.e., the listener should expect to receive no more messages
+ * from the source), the source should invoke sourceClosed() on the MessageListener.
+ *
+ * @author Aidan Kirk, David Jennings
+ * @version 12/11/21
  */
 
 package common;

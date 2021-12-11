@@ -55,10 +55,9 @@ public class ConnectionAgent extends MessageSource implements Runnable {
                     socket.close();
                     System.out.println("Client disconnected");
                     break;
-                }else if(received.equals("/test")){
-                    notifyReceipt("We have a test");
+                }else{
+                    notifyReceipt(received);
                 }
-                notifyReceipt(received);
 
             }catch(IOException ioe){
                 System.out.println("ERROR IN CONNECTION AGENT: 56");

@@ -7,16 +7,19 @@ import common.MessageSource;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class BattleServer implements MessageListener {
     private ServerSocket serverSocket;
     private int current;
     private Game game;
-    private ArrayList<ConnectionAgent> connections;
+    private ArrayList<Player> players;
+    private Vector<ConnectionAgent> connections;
 
     public BattleServer(int port) {
         this.game = new Game(10);
-        connections = new ArrayList<>();
+        connections = new Vector<>();
+        players = new ArrayList<>();
         try {
             this.serverSocket = new ServerSocket(port);
         } catch (IOException ioe) {
@@ -30,6 +33,8 @@ public class BattleServer implements MessageListener {
             try{
                 ConnectionAgent connection = new ConnectionAgent(serverSocket.accept());
                 connection.addMessageListener(this);
+                connection.sendMessage("\nWelcome to battleship. To begin please enter: " +
+                        "/battle <username>");
                 connections.add(connection);
                 System.out.println("Connection established: " + connection);
                 connection.start();
@@ -54,10 +59,20 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void messageReceived(String message, MessageSource source) {
-        //Not sure if this is how the message receiving is supposed to work, but I need the
-        // connection agents to be working in order to test it. Same with the method below
-        // source.addMessageListener(this);
-        this.broadcast(message);
+        if (message.equals("/start")){
+           if(connections.size() < 2){
+               ((ConnectionAgent) source).sendMessage("Not enough players to play the game");
+           }else {
+               broadcast("The game begins");
+           }
+        }else if(message.startsWith("/battle")) {
+            String name = message.substring(8);
+            players.add(new Player(name));
+            broadcast("!!! " + name + " has entered battle");
+
+        }else{
+            broadcast(message);
+        }
     }
 
     /**
@@ -68,6 +83,7 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void sourceClosed(MessageSource source) {
+        connections.remove((ConnectionAgent) source);
         source.removeMessageListener(this);
     }
 }

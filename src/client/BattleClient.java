@@ -34,6 +34,7 @@ public class BattleClient extends MessageSource implements MessageListener {
             connection.addMessageListener(this);
             System.out.println("Connected to: " + socket);
             connection.start();
+
         } catch (IOException e) {
             System.out.println("ERROR");
         }
@@ -67,4 +68,5 @@ public class BattleClient extends MessageSource implements MessageListener {
     public void send(String message) {
         connection.sendMessage(message);
     }
+    
 }

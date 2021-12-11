@@ -1,6 +1,4 @@
-package client;
-
-import server.Grid;
+package server;
 
 import java.io.Serializable;
 

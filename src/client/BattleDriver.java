@@ -1,14 +1,5 @@
-/*
- * Western Carolina University
- * Fall 2021
- * CS-465-01 - Computer Networks
- * Program 3: Battleship (Multiuser Game)
- * Instructor: Dr. Scott Barlowe
- */
-
 package client;
 
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -38,13 +29,9 @@ public class BattleDriver {
 
         while (true){
             Scanner input = new Scanner(System.in);
-            String message = input.next();
-            try {
-                bc.send(message);
-            } catch (IOException ioe) {
-                System.out.println("Error: IO Exception" + ioe.getMessage());
-                System.exit(3);
-            }
+            String message = input.nextLine();
+
+            bc.send(message);
 
             if(Objects.equals(message, "/surrender")){
                 System.out.println("Closing Connection...");

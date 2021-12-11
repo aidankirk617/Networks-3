@@ -4,11 +4,10 @@ import common.ConnectionAgent;
 import common.MessageListener;
 import common.MessageSource;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Scanner;
 
 public class BattleClient extends MessageSource implements MessageListener {
 
@@ -29,30 +28,15 @@ public class BattleClient extends MessageSource implements MessageListener {
     }
 
     public void connect() {
-        Player p = new Player(this.username);
-        Socket sock;
-        Scanner scan = new Scanner(System.in);
         try {
-            //output objs
-            sock = new Socket(this.host, this.port);
-            PrintStream out = new PrintStream(sock.getOutputStream());
-            ObjectOutputStream oos = new ObjectOutputStream(out);
+            Socket socket = new Socket(host, port);
+            connection = new ConnectionAgent(socket);
+            connection.addMessageListener(this);
+            System.out.println("Connected to: " + socket);
+            connection.start();
 
-            //input objs
-            InputStream is = sock.getInputStream();
-            ObjectInputStream ois = new ObjectInputStream(is);
-
-            //make a connectionAgent
-            ConnectionAgent cA = new ConnectionAgent(sock, oos, ois, scan, p);
-
-            //send player info once connected
-            cA.sendObject(cA.getPlayer());
-
-            //run
-            cA.run();
         } catch (IOException e) {
             System.out.println("ERROR");
-            System.exit(2);
         }
 
     }
@@ -64,11 +48,10 @@ public class BattleClient extends MessageSource implements MessageListener {
      * @param source  The source from which this message originated (if needed).
      */
     @Override
-    public void messageReceived(String message, MessageSource source) throws IOException {
+    public void messageReceived(String message, MessageSource source) {
         //Not sure if this is how the message receiving is supposed to work, but I need the
         // connection agents to be working in order to test it. Same with the method below
-        source.addMessageListener(this);
-        this.send(message);
+        System.out.println(message);
     }
 
     /**
@@ -82,7 +65,8 @@ public class BattleClient extends MessageSource implements MessageListener {
         source.removeMessageListener(this);
     }
 
-    public void send(String message) throws IOException {
+    public void send(String message) {
         connection.sendMessage(message);
     }
+    
 }

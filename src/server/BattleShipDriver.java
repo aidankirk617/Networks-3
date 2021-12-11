@@ -35,7 +35,7 @@ public class BattleShipDriver {
             size = 10;
         }
         System.out.println("Connecting on port: " + port + ", with game of grid size " + size);
-        BattleServer bs = new BattleServer(port, size);
+        BattleServer bs = new BattleServer(port);
         bs.listen();
     }
 }

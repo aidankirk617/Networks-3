@@ -1,80 +1,54 @@
-/*
- * Western Carolina University
- * Fall 2021
- * CS-465-01 - Computer Networks
- * Program 3: Battleship (Multiuser Game)
- * Instructor: Dr. Scott Barlowe
- */
-
 package server;
 
-import client.Player;
 import common.ConnectionAgent;
 import common.MessageListener;
 import common.MessageSource;
-import java.io.*;
+
+import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.Vector;
 
 public class BattleServer implements MessageListener {
     private ServerSocket serverSocket;
     private int current;
     private Game game;
-    private int size;
-    private ArrayList<ConnectionAgent> connections;
+    private ArrayList<Player> players;
+    private Vector<ConnectionAgent> connections;
 
-    public BattleServer(int port, int size) {
-        this.game = new Game(size);
-        this.size = size;
+    public BattleServer(int port) {
+        this.game = new Game(10);
+        connections = new Vector<>();
+        players = new ArrayList<>();
         try {
             this.serverSocket = new ServerSocket(port);
         } catch (IOException ioe) {
             System.out.println("Error: IO Exception " + ioe.getMessage());
             System.exit(1);
         }
-        connections = new ArrayList<>();
     }
 
     public void listen() {
-        try {
-            boolean done = false;
-            while (!done) {
-                Socket sock = serverSocket.accept();
-                OutputStream os = sock.getOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(os);
-                InputStream is = sock.getInputStream();
-                ObjectInputStream ois = new ObjectInputStream(is);
-                Scanner scan = new Scanner(System.in);
-                Player p = (Player) ois.readObject();
-                p.gridGen(size);
-                game.addPlayer(p);
-                ConnectionAgent ca = new ConnectionAgent(sock, oos, ois, scan, p);
-                connections.add(ca);
-                Thread t = new Thread(ca);
-                System.out.println("Player " + p.getName() + " connected");
-                t.start();
-                if (game.players.size() >= 2) {
-                    //receive input to start game/close
-                    String command = (String) connections.get(0).getOis().readObject(); //only p1 can start the game
-                    if (command.equals("/start")) {
-                        for (int i = 0; i < connections.size(); i++) {
-                            connections.get(i).getOos().writeObject("The game begins");
-                        }
-                        game.play(connections);
-                        done = true;
-                    }
-                }
+        while(!serverSocket.isClosed()){
+            try{
+                ConnectionAgent connection = new ConnectionAgent(serverSocket.accept());
+                connection.addMessageListener(this);
+                connection.sendMessage("\nWelcome to battleship. To begin please enter: " +
+                        "/battle <username>");
+                connections.add(connection);
+                System.out.println("Connection established: " + connection);
+                connection.start();
+            }catch (IOException ioe){
+                System.out.println("ERROR IN BATTLE SERVER");
             }
-        } catch (IOException | ClassNotFoundException ioe) {
-            System.out.println("Error: IO Exception " + ioe.getMessage());
-            System.exit(2);
+
         }
     }
 
     public void broadcast(String message) {
-
+        for(ConnectionAgent connection : connections){
+            connection.sendMessage(message);
+        }
     }
 
     /**
@@ -85,10 +59,20 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void messageReceived(String message, MessageSource source) {
-        //Not sure if this is how the message receiving is supposed to work, but I need the
-        // connection agents to be working in order to test it. Same with the method below
-        source.addMessageListener(this);
-        this.broadcast(message);
+        if (message.equals("/start")){
+           if(connections.size() < 2){
+               ((ConnectionAgent) source).sendMessage("Not enough players to play the game");
+           }else {
+               broadcast("The game begins");
+           }
+        }else if(message.startsWith("/battle")) {
+            String name = message.substring(8);
+            players.add(new Player(name));
+            broadcast("!!! " + name + " has entered battle");
+
+        }else{
+            broadcast(message);
+        }
     }
 
     /**
@@ -99,6 +83,7 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void sourceClosed(MessageSource source) {
+        connections.remove((ConnectionAgent) source);
         source.removeMessageListener(this);
     }
 }

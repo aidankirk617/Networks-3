@@ -8,8 +8,6 @@
 
 package server;
 
-import client.Player;
-
 import java.util.Arrays;
 import java.util.Random;
 
@@ -366,29 +364,4 @@ public class Grid {
     return board;
   }
 
-  /** Main **/
-  public static void main(String[] args) {
-//    Scanner scanner = new Scanner(System.in);
-//    System.out.println("What board size would you like (5-10): ");
-//    int boardSize = scanner.nextInt();
-//    while (boardSize < 5 || boardSize > 10){
-//      System.out.println("Please enter a valid number (5-10): ");
-//      boardSize = scanner.nextInt();
-//    }
-//    Grid grid = new Grid(boardSize);
-//    grid.randPlacement();
-//    System.out.println(grid.printGridA() + "\n\n\n");
-//    grid.printGridB();
-
-    Player david = new Player("David", 0, 10);
-    System.out.println(david);
-    david.markHit(david, 3, 3);
-    System.out.println(david);
-    david.markHit(david, 3, 4);
-    System.out.println(david);
-    david.markHit(david, 3, 5);
-    System.out.println(david);
-    david.markHit(david, 5, 4);
-    System.out.println(david);
-  }
 }

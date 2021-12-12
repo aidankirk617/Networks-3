@@ -23,6 +23,7 @@ public class BattleServer implements MessageListener {
         connections = new Vector<>();
         players = new ArrayList<>();
         gameInProgress = false;
+        eliminated = new ArrayList<>();
         try {
             this.serverSocket = new ServerSocket(port);
         } catch (IOException ioe) {
@@ -160,7 +161,10 @@ public class BattleServer implements MessageListener {
             source.sendMessage("Game not in progress.");
             return;
         }
-
+        if(isEliminated(currentPlayer.getName())){
+            source.sendMessage("Cannot fire when eliminated.");
+            return;
+        }
         int x;
         int y;
 
@@ -172,18 +176,23 @@ public class BattleServer implements MessageListener {
             String invalid = "Invalid target: please enter integers between 0 and " + (game.gridSize-1);
             source.sendMessage(invalid);
             return;
-
         }
-
-        broadcast(game.fire(currentPlayer.getName(), message.substring(10), x, y));
-
+        try {
+            broadcast(game.fire(currentPlayer.getName(), message.substring(10), x, y));
+        }catch (StringIndexOutOfBoundsException sioobe){
+            source.sendMessage("Error firing please try again.");
+        }
         if(game.checkElimination(message.substring(10))){
             broadcast(message.substring(10) + " is eliminated by " + currentPlayer.getName());
-
+            for(Player player : players){
+                if(player.getName().equals(message.substring(10))){
+                    eliminated.add(players.indexOf(player));
+                    break;
+                }
+            }
         }
         if(game.checkWin()){
             broadcast("GAME OVER " + currentPlayer.getName() + " wins!");
-
         }
     }
 
@@ -196,6 +205,25 @@ public class BattleServer implements MessageListener {
                 "remember: all commands must begin with /";
 
         source.sendMessage(invalidInput);
+    }
+
+    private boolean isEliminated(String player){
+        boolean isEliminated = false;
+        int playerIndex = -1;
+
+        for(Player toFind : players){
+            if(toFind.getName().equals(player)){
+                playerIndex = players.indexOf(toFind);
+
+            }
+        }
+        for (Integer indexEliminated : eliminated){
+            if (indexEliminated == playerIndex) {
+                isEliminated = true;
+                break;
+            }
+        }
+        return isEliminated;
     }
 
     /**

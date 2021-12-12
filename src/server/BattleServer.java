@@ -16,8 +16,8 @@ public class BattleServer implements MessageListener {
     private ArrayList<Player> players;
     private Vector<ConnectionAgent> connections;
 
-    public BattleServer(int port) {
-        this.game = new Game(10);
+    public BattleServer(int port, int size) {
+        this.game = new Game(size);
         connections = new Vector<>();
         players = new ArrayList<>();
         try {
@@ -98,18 +98,20 @@ public class BattleServer implements MessageListener {
 
         }else if(message.startsWith("/display")){
             String name = message.substring(9);
-
+            boolean found = false;
             for(Player player : players){
                 if(player.getName().equals(name)){
+                    found = true;
                     if(player.getName().equals(currentPlayer.getName())){
                         ((ConnectionAgent) source).sendMessage(currentPlayer.gridA());
                     }else {
                         ((ConnectionAgent) source).sendMessage(currentPlayer.gridB(player));
                     }
                     break;
-                }else {
-                    ((ConnectionAgent) source).sendMessage("Player not found, check name and try again.");
                 }
+            }
+            if (found == false) {
+                ((ConnectionAgent) source).sendMessage("Player not found, check name and try again.");
             }
 
         }else if(message.startsWith("/fire")){

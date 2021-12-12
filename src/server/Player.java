@@ -45,7 +45,6 @@ public class Player implements Serializable {
 
     public void gridGen(int size) {
         this.grid = new Grid(size);
-        grid.randPlacement();
     }
 
     /** Print Player 1's Grid **/

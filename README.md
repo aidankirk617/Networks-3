@@ -3,7 +3,7 @@
 
 ##### Professor: Dr. Scott Barlowe
 ##### Authors: David Jennings & Aidan Kirk
-##### Version: November 15, 2021
+##### Version: December 11th, 2021
 
 ###### This program simulates a game of Battleship that can be played accross a network. The game will eventually support up to 8 players concurently in the same game. The purpose of this project is to learn to implement concurrent network applications, Java threading, and enabling a TCP client to interact with users as well as with a TCP socket.
 

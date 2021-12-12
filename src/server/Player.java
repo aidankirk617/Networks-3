@@ -1,6 +1,12 @@
-package client;
+/**
+ * Player
+ * Player class that determines usernames, player turns, and whether or not
+ * a player has won the game.
+ * @author Aidan Kirk, David Jennings
+ * @version 12/11/21
+ */
 
-import server.Grid;
+package server;
 
 import java.io.Serializable;
 
@@ -14,11 +20,12 @@ public class Player implements Serializable {
 
     // Initialize values for the player class
     public Player(){
-        this.name = new String();
+        this.name = "";
         this.winner = false;
         this.turn = 0;
     }
 
+    /** Initializes players username **/
     public Player(String name) {
         this.name = name;
     }
@@ -45,22 +52,23 @@ public class Player implements Serializable {
         return grid;
     }
 
+    /** Generates grid **/
     public void gridGen(int size) {
         this.grid = new Grid(size);
-        grid.randPlacement();
     }
 
-    /** Print Player 1's Grid **/
-    public StringBuilder gridA() {
-        return this.grid.printGridA();
+    /** Print Player 1's Grid (attacker: show ships) **/
+    public String gridA() {
+        return String.valueOf(this.grid.printGridA());
     }
 
-    /** Print Player 2's Grid **/
-    public void gridB(Player player) {
-        player.grid.printGridB();
+    /** Print Player 2's Grid (opponent: hide ships) **/
+    public String gridB(Player player) {
+        return String.valueOf(player.grid.printGridB());
     }
 
-    public static Boolean markHit(Player player, int axisX, int axisY) {
+    /** Allows player to mark locations that contain a ship for a registered hit **/
+    public Boolean markHit(Player player, int axisX, int axisY) {
 
         if (axisX >= player.getGrid().getLength() || axisX < 0 ||   // Check Bounds
                 axisY >=player.getGrid().getLength() || axisY < 0) {

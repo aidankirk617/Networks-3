@@ -1,12 +1,14 @@
-/*
- * Western Carolina University
- * Fall 2021
- * CS-465-01 - Computer Networks
- * Program 3: Battleship (Multiuser Game)
- * Instructor: Dr. Scott Barlowe
+/**
+ * MessageListener
+ * MessageListener defines the interface to objects that can observe other objects that receive messages. When
+ * the subject receives a message, the message is forwarded to all registered observers.
+ * @author Aidan Kirk, David Jennings
+ * @version 12/11/21
  */
 
 package common;
+
+import java.io.IOException;
 
 /**
  * This interface represents observers of MessageSource.
@@ -20,7 +22,7 @@ public interface MessageListener {
      * @param message The message received by the subject
      * @param source The source from which this message originated (if needed).
      */
-    public void messageReceived(String message, MessageSource source);
+    public void messageReceived(String message, MessageSource source) throws IOException;
 
     /**
      * Used to notify observers that the subject will not receive new messages; observers can

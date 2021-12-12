@@ -1,3 +1,14 @@
+/**
+ * BattleShipDriver
+ * BattleShipDriver contains the main() method for the server. It parses command line options, instantiates a
+ * BattleServer, and calls its listen() method. This takes two command line arguments, the port number for
+ * the server and the size of the board (if the size is left off, default to size 10 x 10). You may assume square
+ * arrays.
+ *
+ * @author Aidan Kirk, David Jennings
+ * @version 12/11/21
+ */
+
 package server;
 
 public class BattleShipDriver {
@@ -35,7 +46,7 @@ public class BattleShipDriver {
             size = 10;
         }
         System.out.println("Connecting on port: " + port + ", with game of grid size " + size);
-        BattleServer bs = new BattleServer(port);
+        BattleServer bs = new BattleServer(port, size);
         bs.listen();
     }
 }

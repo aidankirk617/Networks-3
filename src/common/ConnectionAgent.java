@@ -65,6 +65,7 @@ public class ConnectionAgent extends MessageSource implements Runnable {
                     System.out.println("Client: " + socket + " is disconnecting...");
                     socket.close();
                     System.out.println("Client disconnected");
+                    notifyReceipt(received);
                     break;
                 }else{
                     notifyReceipt(received);  // Notify

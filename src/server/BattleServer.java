@@ -1,69 +1,50 @@
-/**
- * BattleServer
- * BattleServer is one of the classes that implement the server-side logic of this client-server application. It is
- * responsible for accepting incoming connections, creating ConnectionAgents, and passing the ConnectionA-
- * gent off to threads for processing. The class implements the MessageListener interface (i.e., it can “observe”
- * objects that are MessageSources).
- *
- * @author Aidan Kirk, David Jennings
- * @version 12/11/21
- */
-
 package server;
 
 import common.ConnectionAgent;
 import common.MessageListener;
 import common.MessageSource;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Vector;
 
-/** **/
 public class BattleServer implements MessageListener {
-    // Initialize fields
     private ServerSocket serverSocket;
     private int current;
     private Game game;
     private ArrayList<Player> players;
     private Vector<ConnectionAgent> connections;
 
-    /** **/
     public BattleServer(int port) {
-        this.game = new Game(10);  // Set default grid size to 10
-        connections = new Vector<>();  // Store connections in a vector
-        players = new ArrayList<>();  // Store list of players in an array
+        this.game = new Game(10);
+        connections = new Vector<>();
+        players = new ArrayList<>();
         try {
-            this.serverSocket = new ServerSocket(port); // Create server socket
+            this.serverSocket = new ServerSocket(port);
         } catch (IOException ioe) {
-            System.out.println("Error: IO Exception " + ioe.getMessage());  // If connection fails, run IOException
-            System.exit(1); // Exit program with code 1
+            System.out.println("Error: IO Exception " + ioe.getMessage());
+            System.exit(1);
         }
     }
 
-    /** Creates the server and listens for commands from the client **/
     public void listen() {
         while(!serverSocket.isClosed()){
             try{
-                // Accept the connection into the server socket
                 ConnectionAgent connection = new ConnectionAgent(serverSocket.accept());
-                // Add message listener
                 connection.addMessageListener(this);
-                // Send introduction prompt
                 connection.sendMessage("\nWelcome to battleship. To begin please enter: " +
                         "/battle <username>");
                 connections.add(connection);
-                // Establish and start the connection
                 System.out.println("Connection established: " + connection);
                 connection.start();
-                // If connection fails throw IOException
             }catch (IOException ioe){
-                System.out.println("IOException: Connection failed");
+                System.out.println("ERROR IN BATTLE SERVER");
             }
+
         }
     }
 
-    /** Sends a message to every connection agent connected to the server. **/
     public void broadcast(String message) {
         for(ConnectionAgent connection : connections){
             connection.sendMessage(message);
@@ -78,19 +59,88 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void messageReceived(String message, MessageSource source) {
-        // If player starts the game without enough players, prompt accordingly
-        if (message.equals("/start")){
-           if(connections.size() < 2){
-               ((ConnectionAgent) source).sendMessage("Not enough players to play the game");
-           }else {
-               broadcast("The game begins");  // Begin game
-           }
-        }else if(message.startsWith("/battle")) {
-            String name = message.substring(8); // Max number of players: 8
-            players.add(new Player(name));  // Add player to game
-            broadcast("!!! " + name + " has entered battle");
+
+        Player currentPlayer = null;
+
+        if(players.size() < connections.size()){
+            if(!message.startsWith("/battle")){
+                ((ConnectionAgent) source).sendMessage("Please join by entering: /battle <username>");
+                return;
+            }
         }else{
-            broadcast(message);
+            currentPlayer = players.get(connections.indexOf((ConnectionAgent) source));
+        }
+
+        assert currentPlayer != null;
+
+        if (message.equals("/start")){
+           if(players.size() < 2){
+               ((ConnectionAgent) source).sendMessage("Not enough players to play the game");
+
+           }else {
+               broadcast("The game begins");
+               for (Player player : players){
+                   game.addPlayer(player);
+               }
+               game.generate();
+           }
+
+        }else if(message.startsWith("/battle")) {
+            String name = message.substring(8);
+            players.add(new Player(name));
+            broadcast("!!! " + name + " has entered battle");
+
+        }else if(message.equals("/surrender")){
+            broadcast(currentPlayer.getName() + " " +
+                    "has left the game.");
+            players.remove(connections.indexOf((ConnectionAgent) source));
+            broadcast("Players remaining: " + players.size());
+
+        }else if(message.startsWith("/display")){
+            String name = message.substring(9);
+
+            for(Player player : players){
+                if(player.getName().equals(name)){
+                    if(player.getName().equals(currentPlayer.getName())){
+                        ((ConnectionAgent) source).sendMessage(currentPlayer.gridA());
+                    }else {
+                        ((ConnectionAgent) source).sendMessage(currentPlayer.gridB(player));
+                    }
+                    break;
+                }else {
+                    ((ConnectionAgent) source).sendMessage("Player not found, check name and try again.");
+                }
+            }
+
+        }else if(message.startsWith("/fire")){
+
+            int x;
+            int y;
+            try {
+                x = Integer.parseInt(message.substring(6, 7));
+                y = Integer.parseInt(message.substring(8, 9));
+            }catch (NumberFormatException numberFormatException){
+                String invalid = "Invalid target: please enter integers between 0 and " + (game.gridSize-1);
+                ((ConnectionAgent) source).sendMessage(invalid);
+                return;
+            }
+            broadcast(game.fire(currentPlayer.getName(), message.substring(10), x, y));
+            if(game.checkElimination(message.substring(10))){
+                broadcast(message.substring(10) + " is eliminated by " + currentPlayer.getName());
+
+            }
+            if(game.checkWin()){
+                broadcast("GAME OVER " + currentPlayer.getName() + " wins!");
+            }
+        }else{
+            String invalidInput = "Unknown input. Available commands:\n" +
+                    "start\n" +
+                    "fire <[0-"+(game.gridSize-1)+"]> <[0-"+(game.gridSize-1)+"]> <username>\n" +
+                    "surrender\n" +
+                    "display <username>" +
+                    "remember: all commands must begin with /";
+
+            ((ConnectionAgent) source).sendMessage(invalidInput);
         }
     }
 
@@ -102,8 +152,8 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void sourceClosed(MessageSource source) {
-        // Remove connection agents and listeners
         connections.remove((ConnectionAgent) source);
         source.removeMessageListener(this);
+        broadcast("Connections: " + connections.size());
     }
 }

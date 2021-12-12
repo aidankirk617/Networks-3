@@ -1,11 +1,3 @@
-/**
- * Player
- * Player class that determines usernames, player turns, and whether or not
- * a player has won the game.
- * @author Aidan Kirk, David Jennings
- * @version 12/11/21
- */
-
 package server;
 
 import java.io.Serializable;
@@ -18,14 +10,13 @@ public class Player implements Serializable {
     private int turn;           // Determines if it is the players turn or not
     private Grid grid;          // Determines the players grid
 
-    /** Initialize values for the player class **/
+    // Initialize values for the player class
     public Player(){
-        this.name = new String();
+        this.name = "";
         this.winner = false;
         this.turn = 0;
     }
 
-    /** Initializes players username **/
     public Player(String name) {
         this.name = name;
     }
@@ -52,38 +43,36 @@ public class Player implements Serializable {
         return grid;
     }
 
-    /** Generates grid **/
     public void gridGen(int size) {
         this.grid = new Grid(size);
         grid.randPlacement();
     }
 
     /** Print Player 1's Grid **/
-    public StringBuilder gridA() {
-        return this.grid.printGridA();
+    public String gridA() {
+        return String.valueOf(this.grid.printGridA());
     }
 
     /** Print Player 2's Grid **/
-    public void gridB(Player player) {
-        player.grid.printGridB();
+    public String gridB(Player player) {
+        return String.valueOf(player.grid.printGridB());
     }
 
-    /** Allows player to mark locations that contain a ship for a registered hit **/
-    public static Boolean markHit(Player player, int axisX, int axisY) {
+    public Boolean markHit(Player player, int axisX, int axisY) {
 
-        if (axisX >= player.getGrid().getLength() || axisX < 0 ||  // Check Bounds
+        if (axisX >= player.getGrid().getLength() || axisX < 0 ||   // Check Bounds
                 axisY >=player.getGrid().getLength() || axisY < 0) {
             return false;
         }
-        char hold = player.grid.getSpace(axisX, axisY); // Check hit
+        char hold = player.grid.getSpace(axisX, axisY);     // Check hit
         if (hold == 'C' || hold == 'B' || hold == 'R' ||
                 hold == 'S' || hold == 'D') {
 
-            player.grid.setSpace('X', axisX, axisY); // Set hit
+            player.grid.setSpace('X', axisX, axisY);              // Set hit
             return true;
         } else if (hold == ' ') {
             //set char there to O for miss
-            player.grid.setSpace('O', axisX, axisY); // Set miss
+            player.grid.setSpace('O', axisX, axisY);              // Set miss
             return true;
         } else {
             return false;

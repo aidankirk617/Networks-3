@@ -15,11 +15,14 @@ public class BattleServer implements MessageListener {
     private Game game;
     private ArrayList<Player> players;
     private Vector<ConnectionAgent> connections;
+    private ArrayList<Integer> eliminated;
+    private boolean gameInProgress;
 
     public BattleServer(int port) {
-        this.game = new Game(10);
+        this.game = new Game(5);
         connections = new Vector<>();
         players = new ArrayList<>();
+        gameInProgress = false;
         try {
             this.serverSocket = new ServerSocket(port);
         } catch (IOException ioe) {
@@ -64,84 +67,135 @@ public class BattleServer implements MessageListener {
 
         if(players.size() < connections.size()){
             if(!message.startsWith("/battle")){
-                ((ConnectionAgent) source).sendMessage("Please join by entering: /battle <username>");
+                ((ConnectionAgent) source).sendMessage("A player has not joined.\n" +
+                        "Please join by entering: /battle <username>");
                 return;
             }
+
         }else{
             currentPlayer = players.get(connections.indexOf((ConnectionAgent) source));
+
         }
 
         assert currentPlayer != null;
 
         if (message.equals("/start")){
-           if(players.size() < 2){
-               ((ConnectionAgent) source).sendMessage("Not enough players to play the game");
-
-           }else {
-               broadcast("The game begins");
-               for (Player player : players){
-                   game.addPlayer(player);
-               }
-               game.generate();
-           }
+            startGame((ConnectionAgent) source);
 
         }else if(message.startsWith("/battle")) {
-            String name = message.substring(8);
-            players.add(new Player(name));
-            broadcast("!!! " + name + " has entered battle");
+            joinGame(message, (ConnectionAgent) source);
 
         }else if(message.equals("/surrender")){
-            broadcast(currentPlayer.getName() + " " +
-                    "has left the game.");
-            players.remove(connections.indexOf((ConnectionAgent) source));
-            broadcast("Players remaining: " + players.size());
+            leaveGame((ConnectionAgent) source, currentPlayer);
 
         }else if(message.startsWith("/display")){
-            String name = message.substring(9);
-
-            for(Player player : players){
-                if(player.getName().equals(name)){
-                    if(player.getName().equals(currentPlayer.getName())){
-                        ((ConnectionAgent) source).sendMessage(currentPlayer.gridA());
-                    }else {
-                        ((ConnectionAgent) source).sendMessage(currentPlayer.gridB(player));
-                    }
-                    break;
-                }else {
-                    ((ConnectionAgent) source).sendMessage("Player not found, check name and try again.");
-                }
-            }
+            display(message, (ConnectionAgent) source, currentPlayer);
 
         }else if(message.startsWith("/fire")){
+            fire(message, (ConnectionAgent) source, currentPlayer);
 
-            int x;
-            int y;
-            try {
-                x = Integer.parseInt(message.substring(6, 7));
-                y = Integer.parseInt(message.substring(8, 9));
-            }catch (NumberFormatException numberFormatException){
-                String invalid = "Invalid target: please enter integers between 0 and " + (game.gridSize-1);
-                ((ConnectionAgent) source).sendMessage(invalid);
-                return;
-            }
-            broadcast(game.fire(currentPlayer.getName(), message.substring(10), x, y));
-            if(game.checkElimination(message.substring(10))){
-                broadcast(message.substring(10) + " is eliminated by " + currentPlayer.getName());
-
-            }
-            if(game.checkWin()){
-                broadcast("GAME OVER " + currentPlayer.getName() + " wins!");
-            }
         }else{
-            String invalidInput = "Unknown input. Available commands:\n" +
-                    "start\n" +
-                    "fire <[0-"+(game.gridSize-1)+"]> <[0-"+(game.gridSize-1)+"]> <username>\n" +
-                    "surrender\n" +
-                    "display <username>" +
-                    "remember: all commands must begin with /";
-
-            ((ConnectionAgent) source).sendMessage(invalidInput);
+            invalidInput((ConnectionAgent) source);
         }
+    }
+
+    private void leaveGame(ConnectionAgent source, Player currentPlayer) {
+        broadcast(currentPlayer.getName() + " " +
+                "has left the game.");
+        players.remove(connections.indexOf(source));
+    }
+
+    private void joinGame(String message, ConnectionAgent source) {
+        if(gameInProgress){
+            source.sendMessage("Game already in progress.");
+            return;
+        }
+        String name = message.substring(8);
+        players.add(new Player(name));
+        broadcast("!!! " + name + " has entered battle");
+    }
+
+    private void startGame(ConnectionAgent source) {
+        if(gameInProgress){
+            source.sendMessage("Game already in progress.");
+            return;
+        }
+
+        if(players.size() < 2){
+            source.sendMessage("Not enough players to play the game");
+
+        }else {
+            broadcast("The game begins");
+            for (Player player : players){
+                game.addPlayer(player);
+            }
+            game.generate();
+            gameInProgress = true;
+        }
+    }
+
+    private void display(String message, ConnectionAgent source, Player currentPlayer) {
+        if(!gameInProgress){
+            source.sendMessage("Game not in progress.");
+            return;
+        }
+        String name = message.substring(9);
+
+        for(Player player : players){
+            if(player.getName().equals(name)){
+                if(player.getName().equals(currentPlayer.getName())){
+                    source.sendMessage(currentPlayer.gridA());
+                }else {
+                    source.sendMessage(currentPlayer.gridB(player));
+                }
+                break;
+            }if(players.indexOf(player) == (players.size() - 1)){
+                source.sendMessage("Player not found, check name and try again.");
+            }
+        }
+    }
+
+    private void fire(String message, ConnectionAgent source, Player currentPlayer) {
+        if(!gameInProgress){
+            source.sendMessage("Game not in progress.");
+            return;
+        }
+
+        int x;
+        int y;
+
+        try {
+            x = Integer.parseInt(message.substring(6, 7));
+            y = Integer.parseInt(message.substring(8, 9));
+
+        }catch (NumberFormatException numberFormatException){
+            String invalid = "Invalid target: please enter integers between 0 and " + (game.gridSize-1);
+            source.sendMessage(invalid);
+            return;
+
+        }
+
+        broadcast(game.fire(currentPlayer.getName(), message.substring(10), x, y));
+
+        if(game.checkElimination(message.substring(10))){
+            broadcast(message.substring(10) + " is eliminated by " + currentPlayer.getName());
+
+        }
+        if(game.checkWin()){
+            broadcast("GAME OVER " + currentPlayer.getName() + " wins!");
+
+        }
+    }
+
+    private void invalidInput(ConnectionAgent source) {
+        String invalidInput = "Unknown input. Available commands:\n" +
+                "start\n" +
+                "fire <[0-"+(game.gridSize-1)+"]> <[0-"+(game.gridSize-1)+"]> <username>\n" +
+                "surrender\n" +
+                "display <username>\n" +
+                "remember: all commands must begin with /";
+
+        source.sendMessage(invalidInput);
     }
 
     /**
@@ -154,6 +208,6 @@ public class BattleServer implements MessageListener {
     public void sourceClosed(MessageSource source) {
         connections.remove((ConnectionAgent) source);
         source.removeMessageListener(this);
-        broadcast("Connections: " + connections.size());
+
     }
 }

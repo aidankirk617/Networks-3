@@ -51,22 +51,22 @@ public class Game {
                 toCheck = player;
             }
         }
-        boolean isShip = false;
+        boolean isEliminated = true;
         assert toCheck != null;
         for (char[] chars : toCheck.getGrid().getGrid()) {
             for (char positionChar : chars) {
                 if (positionChar == 'C' || positionChar == 'B' || positionChar == 'R' ||
                         positionChar == 'S' || positionChar == 'D') {
                     //check every spot for ships
-                    isShip = true;
+                    isEliminated = false;
                     break;
                 }
             }
-            if(isShip){
+            if(!isEliminated){
                 break;
             }
         }
-        return isShip;
+        return isEliminated;
 
     }
 

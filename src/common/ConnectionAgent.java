@@ -11,6 +11,7 @@ package common;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class ConnectionAgent extends MessageSource implements Runnable {
@@ -51,9 +52,8 @@ public class ConnectionAgent extends MessageSource implements Runnable {
             try {
                 String received = in.nextLine();
                 if(received.equals("/surrender")){
-                    System.out.println("Client: " + socket + " is disconnecting...");
                     socket.close();
-                    System.out.println("Client disconnected");
+                    System.out.println("Connection closed: " + this);
                     notifyReceipt(received);
                     break;
                 }else{
@@ -62,6 +62,8 @@ public class ConnectionAgent extends MessageSource implements Runnable {
 
             }catch(IOException ioe){
                 System.out.println("ERROR IN CONNECTION AGENT: 56");
+            }catch (NoSuchElementException nsee){
+                break;
             }
         }
         this.close();

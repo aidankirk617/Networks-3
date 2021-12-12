@@ -208,10 +208,12 @@ public class BattleServer implements MessageListener {
      * @param currentPlayer player object of current player
      */
     private void fire(String message, ConnectionAgent source, Player currentPlayer) {
+        //If the game is not in progress, player can not fire
         if(!gameInProgress){
             source.sendMessage("Game not in progress.");
             return;
         }
+        //if player is eliminated, player can not fire
         if(isEliminated(currentPlayer.getName())){
             source.sendMessage("Cannot fire when eliminated.");
             return;
@@ -228,11 +230,15 @@ public class BattleServer implements MessageListener {
             source.sendMessage(invalid);
             return;
         }
+        
         try {
+            //fire method in the Game class returns a string which tells players if a shot has been fired
             broadcast(game.fire(currentPlayer.getName(), message.substring(10), x, y));
         }catch (StringIndexOutOfBoundsException sioobe){
             source.sendMessage("Error firing please try again.");
         }
+        
+        //check if this shot has eliminated a player, if so broadcast it
         if(game.checkElimination(message.substring(10))){
             broadcast(message.substring(10) + " is eliminated by " + currentPlayer.getName());
             for(Player player : players){
@@ -242,6 +248,8 @@ public class BattleServer implements MessageListener {
                 }
             }
         }
+        
+        //check to see if this shot has ended the game (note: still broadcasts whenever a player is eliminated)
         if(game.checkWin()){
             broadcast("GAME OVER " + currentPlayer.getName() + " wins!");
         }

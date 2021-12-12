@@ -1,3 +1,14 @@
+/**
+ * BattleServer
+ * BattleServer is one of the classes that implement the server-side logic of this client-server application. It is
+ * responsible for accepting incoming connections, creating ConnectionAgents, and passing the ConnectionA-
+ * gent off to threads for processing. The class implements the MessageListener interface (i.e., it can “observe”
+ * objects that are MessageSources).
+ *
+ * @author Aidan Kirk, David Jennings
+ * @version 12/11/21
+ */
+
 package server;
 
 import common.ConnectionAgent;
@@ -10,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 public class BattleServer implements MessageListener {
+
+    //initialize fields
     private ServerSocket serverSocket;
     private int current;
     private final Game game;
@@ -20,15 +33,15 @@ public class BattleServer implements MessageListener {
 
     public BattleServer(int port, int size) {
         this.game = new Game(size);
-        connections = new Vector<>();
-        players = new ArrayList<>();
+        connections = new Vector<>(); // Store connections in a vector
+        players = new ArrayList<>(); // Store list of players in an array
         gameInProgress = false;
         eliminated = new ArrayList<>();
         try {
-            this.serverSocket = new ServerSocket(port);
-        } catch (IOException ioe) {
+            this.serverSocket = new ServerSocket(port); // Create server socket
+        } catch (IOException ioe) { // If connection fails, run IOException
             System.out.println("Error: IO Exception " + ioe.getMessage());
-            System.exit(1);
+            System.exit(1); // Exit program with code 1
         }
     }
 

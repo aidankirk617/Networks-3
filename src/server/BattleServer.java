@@ -12,14 +12,14 @@ import java.util.Vector;
 public class BattleServer implements MessageListener {
     private ServerSocket serverSocket;
     private int current;
-    private Game game;
-    private ArrayList<Player> players;
-    private Vector<ConnectionAgent> connections;
-    private ArrayList<Integer> eliminated;
+    private final Game game;
+    private final ArrayList<Player> players;
+    private final Vector<ConnectionAgent> connections;
+    private final ArrayList<Integer> eliminated;
     private boolean gameInProgress;
 
-    public BattleServer(int port) {
-        this.game = new Game(5);
+    public BattleServer(int port, int size) {
+        this.game = new Game(size);
         connections = new Vector<>();
         players = new ArrayList<>();
         gameInProgress = false;
@@ -236,6 +236,5 @@ public class BattleServer implements MessageListener {
     public void sourceClosed(MessageSource source) {
         connections.remove((ConnectionAgent) source);
         source.removeMessageListener(this);
-
     }
 }

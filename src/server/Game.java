@@ -1,3 +1,10 @@
+/**
+ * Game
+ * Game contains the logic for the game of BattleShip. It has a Grid for each client.
+ * @author Aidan Kirk, David Jennings
+ * @version 12/11/21
+ */
+
 package server;
 
 import java.util.ArrayList;
@@ -6,15 +13,15 @@ public class Game {
     /**An arraylist of players that are participating in this game**/
     ArrayList<Player> players;
 
-    int gridSize;
+    int gridSize; // Size of the battleship game grid
 
     /**
-     *
+     * Creates a game with 2 players
+     * @param gridSize the size of grid to play with
      */
-
     public Game(int gridSize) {
-        players = new ArrayList<>();
-        this.gridSize = gridSize;
+        players = new ArrayList<>(); // Register and keep track of players in an array list
+        this.gridSize = gridSize; // Initialize grid size
     }
 
     /**
@@ -22,6 +29,7 @@ public class Game {
      * @return true if a player has won, false otherwise
      */
     public boolean checkWin() {
+        // Keep result false unless win conditions are met
         boolean result = false;
         for (Player player : players) {
             char[][] pGrid = player.getGrid().getGrid();

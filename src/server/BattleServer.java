@@ -45,14 +45,19 @@ public class BattleServer implements MessageListener {
         }
     }
 
+    /** Creates the server and listens for commands from the client **/
     public void listen() {
         while(!serverSocket.isClosed()){
             try{
+                // Accept the connection into the server socket
                 ConnectionAgent connection = new ConnectionAgent(serverSocket.accept());
+                // Add message listener
                 connection.addMessageListener(this);
+                // Send introduction prompt
                 connection.sendMessage("\nWelcome to battleship. To begin please enter: " +
                         "/battle <username>");
                 connections.add(connection);
+                // Establish and start the connection
                 System.out.println("Connection established: " + connection);
                 connection.start();
             }catch (IOException ioe){
@@ -62,6 +67,7 @@ public class BattleServer implements MessageListener {
         }
     }
 
+    /** Sends a message to every connection agent connected to the server. **/
     public void broadcast(String message) {
         for(ConnectionAgent connection : connections){
             connection.sendMessage(message);
@@ -69,7 +75,9 @@ public class BattleServer implements MessageListener {
     }
 
     /**
-     * Used to notify observers that the subject has received a message.
+     * Used to notify observers that the subject has received a message. This will check to see
+     * if a valid command has been sent, if one has, the message is sent to a helper method
+     * to operate game functions.
      *
      * @param message The message received by the subject
      * @param source  The source from which this message originated (if needed).
@@ -79,6 +87,7 @@ public class BattleServer implements MessageListener {
 
         Player currentPlayer = null;
 
+        // If player starts the game without enough players, prompt accordingly
         if(players.size() < connections.size()){
             if(!message.startsWith("/battle")){
                 ((ConnectionAgent) source).sendMessage("A player has not joined.\n" +
@@ -113,12 +122,22 @@ public class BattleServer implements MessageListener {
         }
     }
 
+    /**
+     * Helper for leaving a game. Closes the connection and announces that a player has left.
+     * @param source player to disconnect.
+     * @param currentPlayer player to remove from list.
+     */
     private void leaveGame(ConnectionAgent source, Player currentPlayer) {
         broadcast(currentPlayer.getName() + " " +
                 "has left the game.");
         players.remove(connections.indexOf(source));
     }
 
+    /**
+     * Helper for adding players to a game. Receives the message and adds appropriate username.
+     * @param message players command to join along with their username.
+     * @param source connection of player joining.
+     */
     private void joinGame(String message, ConnectionAgent source) {
         if(gameInProgress){
             source.sendMessage("Game already in progress.");
@@ -129,6 +148,10 @@ public class BattleServer implements MessageListener {
         broadcast("!!! " + name + " has entered battle");
     }
 
+    /**
+     * Helper for starting the game, given that the right amount of players have joined.
+     * @param source player asking to start game.
+     */
     private void startGame(ConnectionAgent source) {
         if(gameInProgress){
             source.sendMessage("Game already in progress.");
@@ -139,6 +162,7 @@ public class BattleServer implements MessageListener {
             source.sendMessage("Not enough players to play the game");
 
         }else {
+            //Initializing the game
             broadcast("The game begins");
             for (Player player : players){
                 game.addPlayer(player);
@@ -148,6 +172,13 @@ public class BattleServer implements MessageListener {
         }
     }
 
+    /**
+     * Helper for displaying players board. If a player wishes to see their own board, their ships
+     * will be shown, otherwise they will be hidden.
+     * @param message player request for board to view
+     * @param source player attempting to display board
+     * @param currentPlayer player object of current player
+     */
     private void display(String message, ConnectionAgent source, Player currentPlayer) {
         if(!gameInProgress){
             source.sendMessage("Game not in progress.");
@@ -164,11 +195,18 @@ public class BattleServer implements MessageListener {
                 }
                 break;
             }if(players.indexOf(player) == (players.size() - 1)){
+                //if this is the last player and no player has been found with given name, alert source
                 source.sendMessage("Player not found, check name and try again.");
             }
         }
     }
 
+    /**
+     * Helper for firing at a player during a game.
+     * @param message request for firing at a player
+     * @param source connection of player making request
+     * @param currentPlayer player object of current player
+     */
     private void fire(String message, ConnectionAgent source, Player currentPlayer) {
         if(!gameInProgress){
             source.sendMessage("Game not in progress.");
@@ -209,6 +247,10 @@ public class BattleServer implements MessageListener {
         }
     }
 
+    /**
+     * Helper method to catch unrecognized input
+     * @param source source making request with bad input
+     */
     private void invalidInput(ConnectionAgent source) {
         String invalidInput = "Unknown input. Available commands:\n" +
                 "start\n" +
@@ -220,6 +262,11 @@ public class BattleServer implements MessageListener {
         source.sendMessage(invalidInput);
     }
 
+    /**
+     * Helper to check if a given player is eliminated
+     * @param player name of the player to check
+     * @return true if the player has been eliminated, false otherwise
+     */
     private boolean isEliminated(String player){
         boolean isEliminated = false;
         int playerIndex = -1;
@@ -247,6 +294,7 @@ public class BattleServer implements MessageListener {
      */
     @Override
     public void sourceClosed(MessageSource source) {
+        // Remove connection agents and listeners
         connections.remove((ConnectionAgent) source);
         source.removeMessageListener(this);
     }

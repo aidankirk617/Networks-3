@@ -1,3 +1,11 @@
+/**
+ * Player
+ * Player class that determines usernames, player turns, and whether or not
+ * a player has won the game.
+ * @author Aidan Kirk, David Jennings
+ * @version 12/11/21
+ */
+
 package server;
 
 import java.io.Serializable;
@@ -17,6 +25,7 @@ public class Player implements Serializable {
         this.turn = 0;
     }
 
+    /** Initializes players username **/
     public Player(String name) {
         this.name = name;
     }
@@ -43,20 +52,22 @@ public class Player implements Serializable {
         return grid;
     }
 
+    /** Generates grid **/
     public void gridGen(int size) {
         this.grid = new Grid(size);
     }
 
-    /** Print Player 1's Grid **/
+    /** Print Player 1's Grid (attacker: show ships) **/
     public String gridA() {
         return String.valueOf(this.grid.printGridA());
     }
 
-    /** Print Player 2's Grid **/
+    /** Print Player 2's Grid (opponent: hide ships) **/
     public String gridB(Player player) {
         return String.valueOf(player.grid.printGridB());
     }
 
+    /** Allows player to mark locations that contain a ship for a registered hit **/
     public Boolean markHit(Player player, int axisX, int axisY) {
 
         if (axisX >= player.getGrid().getLength() || axisX < 0 ||   // Check Bounds

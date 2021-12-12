@@ -49,15 +49,14 @@ Run the Server using java. Then run the client using java.
 
 If the game will not compile, try going into each package and compiling all java files.
 
-## Changelog
-[Timeline for this project](/TIMELINE.md)
+12/11/2021 If a player does /battle username twice before the game starts an extra player will be added to the list, causing bugs throughout
 
-No current issues.
+12/11/2021 If a player leaves the game before it is finished, the end of the game will not be recognized as their grid will still exist
 
-#### For David
+12/11/2021 players are able to fire at any time (turns are not tracked)
 
-Here's the rundown. Was able to get a game going that communicates between client and server, rather than earlier where it could only run on server. Seems to work fine? I was able to finish a game without it breaking. That being said, it has some prompts and i need to rewrite some more to let it use all the commands he described. I think the next logical step is for us to check out the connection agent and message stuff and get it working before we move on to threading. After we get threading going, we can finally do the whole "multiple" client bit he wanted, then we're all gucci. Text me if this didn't make any sense
+12/11/2021 when the game ends, players are still able to fire at grids
 
-Oh yeah, also run BattleShipDriver.java first, and then BattleDriver.java. Once you have BattleDriver.java running, type '/start' to begin.
+12/11/2021 if a player tries to enter the server in the middle of a game, many bugs will occur
 
-CLA's for BattleShipDriver are 5000 5, and localhost 5000 player1 for BattleDriver. Should be able to type in your edit configurations in intellij.
+12/11/2021 the server must be restarted to start a new game
